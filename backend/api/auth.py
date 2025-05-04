@@ -3,14 +3,13 @@ from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
 from fastapi.responses import JSONResponse
 
 from common.models.auth import LoginResponse, ChangePasswordRequest
+from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
+from common.models.user import UserRead, UserCreate
+from common.utils._jwt import create_access_token, SECRET_KEY, ALGORITHM
 from common.utils.auth import get_current_user
 from common.utils.dependency_injection import get_user_repository
 from db.models.user import User
 from repositories.user import UserRepository
-from common.utils._jwt import create_access_token, SECRET_KEY, ALGORITHM
-from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
-
-from common.models.user import UserRead, UserCreate
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

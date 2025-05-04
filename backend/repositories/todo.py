@@ -1,9 +1,9 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from common.models.todo import TodoCreate, TodoUpdate
 from db.db_session import get_db
 from db.models.todo import Todo
-from common.models.todo import TodoCreate, TodoUpdate
 from repositories.todo_list import TodoListRepository
 
 

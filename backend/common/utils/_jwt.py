@@ -1,4 +1,5 @@
-from datetime import timedelta, datetime,UTC
+from datetime import timedelta, datetime, UTC
+
 import jwt
 
 from common.utils.config import settings

@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from common.models.todo_list import TodoListRead, TodoListCreate, TodoListUpdate
-
-from common.utils.auth import get_current_user
 from common.models.user import UserRead
+from common.utils.auth import get_current_user
 from common.utils.dependency_injection import get_todo_list_repository
-
 from repositories.todo_list import TodoListRepository
 
 router = APIRouter(prefix="/todo-lists", tags=["todo-lists"])

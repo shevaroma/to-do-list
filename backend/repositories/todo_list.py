@@ -1,9 +1,9 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from common.models.todo_list import TodoListCreate, TodoListUpdate
 from db.db_session import get_db
 from db.models.todo_list import TodoList
-from common.models.todo_list import TodoListCreate, TodoListUpdate
 
 
 class TodoListRepository:

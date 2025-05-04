@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from common.utils.auth import get_current_user
 from common.models.todo import TodoCreate, TodoUpdate, TodoRead
 from common.models.user import UserRead
+from common.utils.auth import get_current_user
 from common.utils.dependency_injection import get_todo_repository
 from repositories.todo import TodoRepository
 

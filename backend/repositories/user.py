@@ -2,16 +2,16 @@ from datetime import timedelta
 from typing import Optional
 
 from fastapi import Depends, HTTPException, BackgroundTasks
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+import common.models.user as models
 from common.utils._jwt import create_access_token
+from common.utils.config import settings
 from common.utils.email import send_email
 from db.db_session import get_db
 from db.models.user import User
-import common.models.user as models
-from passlib.context import CryptContext
 from repositories.todo_list import TodoListRepository
-from common.utils.config import settings
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 BASE_URL = settings.base_url
