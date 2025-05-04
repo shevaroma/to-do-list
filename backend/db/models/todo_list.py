@@ -1,0 +1,17 @@
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey
+from db.database import Base
+
+
+class TodoList(Base):
+    __tablename__ = "todo_lists"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
+
+    owner = relationship("User", back_populates="todo_lists")
+    todos = relationship("Todo", back_populates="todo_list")
+
+    def __repr__(self):
+        return f"<TodoList(id={self.id}, title={self.title}, owner_id={self.owner_id})>"
