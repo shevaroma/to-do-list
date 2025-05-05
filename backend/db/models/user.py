@@ -12,7 +12,8 @@ class User(Base):
     display_name = Column(String)
     hashed_password = Column(String)
 
-    todo_lists = relationship("TodoList", back_populates="owner")
+    todo_lists = relationship("TodoList", back_populates="owner", cascade="all, delete")
+    todos = relationship("Todo", back_populates="owner", cascade="all, delete")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, display_name={self.display_name})>"

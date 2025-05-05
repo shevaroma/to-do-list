@@ -1,10 +1,9 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-
-from api import auth, users, todo_lists, todos
 from fastapi.middleware.cors import CORSMiddleware
 
+from api import auth, users, todo_lists, todos
 from db import init_db
 
 app = FastAPI()
@@ -12,6 +11,7 @@ app = FastAPI()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    yield
 
 app.include_router(auth.router)
 app.include_router(users.router)
