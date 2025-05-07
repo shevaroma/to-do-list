@@ -11,10 +11,11 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 
 @router.get("/", response_model=list[TodoRead])
 def get_my_todos(
+        todo_list_id: int = None,
         user: UserRead = Depends(get_current_user),
         repository: TodoRepository = Depends(get_todo_repository)
 ):
-    return repository.get_todos_by_list(user.id)
+    return repository.get_todos_by_list(user.id, todo_list_id)
 
 
 @router.post("/", response_model=TodoRead, status_code=status.HTTP_201_CREATED)
@@ -33,7 +34,7 @@ def get_todo_by_id(
         repository: TodoRepository = Depends(get_todo_repository)
 ):
     todo = repository.get_todo_by_id(todo_id)
-    if not todo or todo.todo_list.owner_id != user.id:
+    if not todo or todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
@@ -46,7 +47,7 @@ def update_todo(
         repository: TodoRepository = Depends(get_todo_repository)
 ):
     todo = repository.get_todo_by_id(todo_id)
-    if not todo or todo.todo_list.owner_id != user.id:
+    if not todo or todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     return repository.update_todo(todo_id, updates)
 
@@ -58,7 +59,7 @@ def delete_todo(
         repository: TodoRepository = Depends(get_todo_repository)
 ):
     todo = repository.get_todo_by_id(todo_id)
-    if not todo or todo.todo_list.owner_id != user.id:
+    if not todo or todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     repository.delete_todo(todo_id)
     return

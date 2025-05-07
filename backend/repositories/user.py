@@ -11,7 +11,6 @@ from common.utils.config import settings
 from common.utils.email import send_email
 from db.db_session import get_db
 from db.models.user import User
-from repositories.todo_list import TodoListRepository
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 BASE_URL = settings.base_url
@@ -45,10 +44,6 @@ class UserRepository:
         self._db.add(user)
         self._db.commit()
         self._db.refresh(user)
-
-        todo_list_repo = TodoListRepository(self._db)
-        todo_list_repo.get_or_create_inbox_list(user.id)
-
         return user
 
     def authenticate_user(self, email: str, password: str) -> Optional[User]:

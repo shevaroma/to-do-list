@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from common.models.todo import TodoCreate, TodoUpdate
 from db.db_session import get_db
 from db.models.todo import Todo
-from repositories.todo_list import TodoListRepository
 
 
 class TodoRepository:
@@ -14,15 +13,19 @@ class TodoRepository:
     def get_todo_by_id(self, todo_id: int):
         return self._db.query(Todo).filter(Todo.id == todo_id).first()
 
-    def get_todos_by_list(self, user_id: int):
-        return self._db.query(Todo).filter(Todo.owner_id == user_id).all()
+    def get_todos_by_list(self, user_id: int, todo_list_id: int = None):
+        query = self._db.query(Todo).filter(Todo.owner_id == user_id)
+        if todo_list_id is None:
+            query = query.filter(Todo.todo_list_id == None)
+        else:
+            query = query.filter(Todo.todo_list_id == todo_list_id)
+        return query.all()
 
     def create_todo(self, todo_in: TodoCreate, user_id: int):
-        if not todo_in.todo_list_id:
-            todo_list_repo = TodoListRepository(self._db)
-            inbox = todo_list_repo.get_or_create_inbox_list(user_id)
-            todo_in.todo_list_id = inbox.id
-        todo = Todo(**todo_in.model_dump(), owner_id=user_id)
+        todo = Todo(
+            **todo_in.model_dump(),
+            owner_id=user_id,
+        )
         self._db.add(todo)
         self._db.commit()
         self._db.refresh(todo)

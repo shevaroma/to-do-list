@@ -13,7 +13,7 @@ class Todo(Base):
     is_completed = Column(Boolean, default=False)
     due_date = Column(DateTime, nullable=True)
     priority = Column(Integer, default=1)  # default priority
-    todo_list_id = Column(Integer, ForeignKey("todo_lists.id"))
+    todo_list_id = Column(Integer, ForeignKey("todo_lists.id"), nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), index=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
