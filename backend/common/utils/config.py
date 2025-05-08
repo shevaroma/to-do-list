@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     email_password: str = Field(alias="EMAIL_PASSWORD")
     base_url: str = Field(alias="BASE_URL")
 
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
 
 settings = Settings()

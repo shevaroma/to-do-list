@@ -39,7 +39,7 @@ class UserRepository:
         user = User(
             email=str(user_in.email),
             hashed_password=self.hash_password(user_in.password),
-            display_name=user_in.display_name
+            display_name=user_in.display_name,
         )
         self._db.add(user)
         self._db.commit()
@@ -52,7 +52,9 @@ class UserRepository:
             return user
         return None
 
-    def update_user(self, user_id: int, user_in: models.UserUpdate) -> Optional[models.User]:
+    def update_user(
+        self, user_id: int, user_in: models.UserUpdate
+    ) -> Optional[models.User]:
         user = self.get_user_by_id(user_id)
         if not user:
             return None
@@ -74,9 +76,15 @@ class UserRepository:
         user = self.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        token = create_access_token({"sub": user.email}, expires_delta=timedelta(hours=1))
-        background_tasks.add_task(send_email, str(user.email), "Password Reset",
-                                  f"Click the link to reset your password: {BASE_URL}/reset-confirm?token={token}")
+        token = create_access_token(
+            {"sub": user.email}, expires_delta=timedelta(hours=1)
+        )
+        background_tasks.add_task(
+            send_email,
+            str(user.email),
+            "Password Reset",
+            f"Click the link to reset your password: {BASE_URL}/reset-confirm?token={token}",
+        )
         # f"Copy the token to reset your password: {token}")
         return token
 

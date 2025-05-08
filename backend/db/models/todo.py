@@ -16,7 +16,9 @@ class Todo(Base):
     todo_list_id = Column(Integer, ForeignKey("todo_lists.id"), nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), index=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
+    )
 
     owner = relationship("User", back_populates="todos")
     todo_list = relationship("TodoList", back_populates="todos")
