@@ -1,5 +1,13 @@
 from pydantic import BaseModel, EmailStr, Field, model_validator
 
+from common.models.user import UserRead
+
+
+class RegisterResponse(BaseModel):
+    user: UserRead
+    access_token: str
+    token_type: str
+
 
 class LoginRequest(BaseModel):
     email: EmailStr
