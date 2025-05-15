@@ -1,6 +1,5 @@
 import jwt
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
-from fastapi.responses import JSONResponse
 
 from common.models.auth import LoginResponse, ChangePasswordRequest, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
@@ -34,9 +33,7 @@ def login(
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_access_token({"sub": user.email})
-    return JSONResponse(
-        content={"access_token": token, "token_type": "bearer"}, status_code=200
-    )
+    return LoginResponse(access_token=token, token_type="bearer")
 
 
 @router.post("/reset-password")
