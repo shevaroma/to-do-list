@@ -8,7 +8,7 @@ class TodoBase(BaseModel):
     title: str
     description: Optional[str] = None
     due_date: Optional[datetime] = None
-    priority: Optional[int] = 1  # 1–5 scale
+    priority: Optional[int] = 3  # 3-1 scale
     todo_list_id: Optional[int] = None  # none = inbox
 
 
