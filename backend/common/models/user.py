@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -26,14 +26,7 @@ class UserRead(UserBase):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
-    confirm_password: str
     display_name: str
-
-    @model_validator(mode="after")
-    def passwords_match(self) -> "UserCreate":
-        if self.password != self.confirm_password:
-            raise ValueError("Passwords do not match")
-        return self
 
 
 class UserUpdate(UserBase):

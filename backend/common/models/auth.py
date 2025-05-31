@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field
 
 from common.models.user import UserRead
 
@@ -26,13 +26,6 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     token: str
     new_password: str = Field(..., min_length=8)
-    confirm_password: str
-
-    @model_validator(mode="after")
-    def passwords_match(self) -> "PasswordResetConfirm":
-        if self.new_password != self.confirm_password:
-            raise ValueError("Passwords do not match")
-        return self
 
 
 class ChangePasswordRequest(BaseModel):
