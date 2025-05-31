@@ -83,7 +83,7 @@ class UserRepository:
             send_email,
             str(user.email),
             "Password Reset",
-            f"Click the link to reset your password: {BASE_URL}/reset-confirm?token={token}",
+            f"Click the link to reset your password: {BASE_URL}/reset-password?token={token}",
         )
         # f"Copy the token to reset your password: {token}")
         return token
