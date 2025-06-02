@@ -1,4 +1,5 @@
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -8,8 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import List from "./list";
-import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import List from "./types/list";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 

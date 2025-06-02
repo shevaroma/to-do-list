@@ -19,13 +19,13 @@ import RenameListDialog from "./rename-list-dialog";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import SidebarMenuListItem from "./sidebar-menu-list-item";
-import List from "./list";
+import List from "./types/list";
 import DeleteListDialog from "./delete-list-dialog";
 import useLists from "@/hooks/use-lists";
 
 const MainLayout = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
-  const { lists, listError, deleteList, createList, renameList } = useLists();
+  const { lists, listError, createList, renameList, deleteList } = useLists();
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [renamedList, setRenamedList] = useState<List>();
   const [deletedListID, setDeletedListID] = useState<string>();

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import List from "@/app/(main)/list";
+import List from "@/app/(main)/types/list";
 
 const RenameListDialog = ({
   list,
