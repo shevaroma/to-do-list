@@ -2,9 +2,10 @@ import { cookies } from "next/headers";
 
 export const GET = async (
   _request: Request,
-  { params }: { params: { id: string } },
+  params: Promise<{ id: string }>,
 ) => {
-  return fetch(`${process.env.API_BASE_URL}/todo-lists/${params.id}`, {
+  const { id } = await params;
+  return fetch(`${process.env.API_BASE_URL}/todo-lists/${id}`, {
     headers: {
       Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
     },
