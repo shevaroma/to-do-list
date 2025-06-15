@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export const GET = async (
   _request: Request,
-  params: Promise<{ id: string }>,
+  { params }: { params: Promise<{ id: string }> },
 ) => {
   const { id } = await params;
   return fetch(`${process.env.API_BASE_URL}/todo-lists/${id}`, {

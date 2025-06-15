@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import List from "./types/list";
+import List from "@/lib/list";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 

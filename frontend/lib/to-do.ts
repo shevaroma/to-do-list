@@ -1,4 +1,4 @@
-type Todo = {
+type ToDo = {
   id: string;
   title: string;
   description: string | null;
@@ -11,4 +11,4 @@ type Todo = {
   updated_at: string;
 };
 
-export default Todo;
+export default ToDo;

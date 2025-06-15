@@ -1,25 +1,24 @@
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import List from "@/app/(main)/types/list";
+import List from "@/lib/list";
+import ToDoListError from "@/lib/to-do-list-error";
 
 const useLists = () => {
   const [lists, setLists] = useState<List[]>();
-  const [listError, setListError] = useState<string>();
+  const [listError, setListError] = useState<ToDoListError>();
   const getLists = async () => {
     try {
-      const response = await fetch(`/api/to-do-lists`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await fetch(`/api/to-do-lists`);
       if (!response.ok) {
         setLists(undefined);
-        setListError("Something went wrong.");
+        setListError(ToDoListError.Unknown);
         return;
       }
       setLists(await response.json());
       setListError(undefined);
     } catch {
       setLists(undefined);
-      setListError("No connection.");
+      setListError(ToDoListError.NoConnection);
     }
   };
   const createList = async (name: string) => {
