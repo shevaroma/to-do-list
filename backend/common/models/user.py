@@ -18,6 +18,7 @@ class User(UserBase):
 
 class UserRead(UserBase):
     id: int
+    display_name: str
 
     class Config:
         from_attributes = True
