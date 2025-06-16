@@ -17,8 +17,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import User from "@/lib/user";
+import { useRouter } from "next/navigation";
 
 const SidebarUserItem = ({ user }: { user: User }) => {
+  const router = useRouter();
   const { isMobile } = useSidebar();
   return (
     <SidebarMenu>
@@ -65,12 +67,22 @@ const SidebarUserItem = ({ user }: { user: User }) => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                router.push("/settings");
+              }}
+            >
               <Settings />
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                document.cookie =
+                  "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                router.push("/sign-in");
+              }}
+            >
               <LogOut />
               Sign out
             </DropdownMenuItem>

@@ -58,16 +58,20 @@ class UserRepository:
         user = self.get_user_by_id(user_id)
         if not user:
             return None
-
         update_data = user_in.model_dump(exclude_unset=True)
-
         if "email" in update_data:
             user.email = update_data["email"]
         if "display_name" in update_data:
             user.display_name = update_data["display_name"]
         if "password" in update_data:
+            current_password = update_data.get("current_password")
+            if not current_password or not self.verify_password(
+                current_password, user.hashed_password
+            ):
+                raise HTTPException(
+                    status_code=400, detail="Current password is incorrect"
+                )
             user.hashed_password = self.hash_password(update_data["password"])
-
         self._db.commit()
         self._db.refresh(user)
         return models.User.model_validate(user)
@@ -85,13 +89,14 @@ class UserRepository:
             "Password Reset",
             f"Click the link to reset your password: {BASE_URL}/reset-password?token={token}",
         )
-        # f"Copy the token to reset your password: {token}")
         return token
 
-    def update_password(self, email: str, new_password: str):
+    def update_password(self, email: str, current_password: str, new_password: str):
         user = self.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        if not self.verify_password(current_password, user.hashed_password):
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
         user.hashed_password = self.hash_password(new_password)
         self._db.commit()
         self._db.refresh(user)

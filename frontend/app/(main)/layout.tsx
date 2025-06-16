@@ -23,83 +23,84 @@ import SidebarMenuListItem from "./sidebar-menu-list-item";
 import List from "@/lib/list";
 import DeleteListDialog from "./delete-list-dialog";
 import useLists from "@/hooks/use-lists";
-import useUser from "@/hooks/use-user";
 import SidebarUserItem from "@/app/(main)/sidebar-user-item";
 import ToDoListError from "@/lib/to-do-list-error";
+import { UserProvider, useUserContextSafe } from "@/app/contexts/user-context";
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const MainLayoutContent = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
   const { lists, listError, createList, renameList, deleteList } = useLists();
+  const userContext = useUserContextSafe();
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [renamedList, setRenamedList] = useState<List>();
   const [deletedListID, setDeletedListID] = useState<string>();
-  const { user, userError } = useUser();
+  const user = userContext?.user;
+  const userError = userContext?.userError;
+
   return (
-    <>
-      <SidebarProvider>
-        <Sidebar>
-          {listError === undefined && userError === undefined ? (
-            <>
-              <SidebarContent>
-                <SidebarGroup>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton isActive={pathName === "/"} asChild>
-                          <Link href="/">Inbox</Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                  <SidebarGroupLabel className="flex justify-between">
-                    Lists
-                    <SidebarMenuAction
-                      className="relative top-0 -mr-2"
-                      onClick={() => {
-                        setNewListDialogOpen(true);
-                      }}
-                    >
-                      <Plus />
-                    </SidebarMenuAction>
-                  </SidebarGroupLabel>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {lists?.map((list) => (
-                        <SidebarMenuListItem
-                          key={list.id}
-                          list={list}
-                          active={pathName === `/list/${list.id}`}
-                          onRename={() => {
-                            setRenamedList(list);
-                          }}
-                          onDelete={() => {
-                            setDeletedListID(list.id);
-                          }}
-                        />
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              </SidebarContent>
-              {user !== undefined && (
-                <SidebarFooter>
-                  <SidebarUserItem user={user} />
-                </SidebarFooter>
-              )}
-            </>
-          ) : (
-            <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">
-              {listError === ToDoListError.NoConnection &&
-              userError === ToDoListError.NoConnection
-                ? "No connection."
-                : "Something went wrong."}
-            </div>
-          )}
-        </Sidebar>
-        {children}
-      </SidebarProvider>
+    <SidebarProvider>
+      <Sidebar>
+        {listError === undefined && userError === undefined ? (
+          <>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton isActive={pathName === "/"} asChild>
+                        <Link href="/">Inbox</Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+              <SidebarGroup>
+                <SidebarGroupLabel className="flex justify-between">
+                  Lists
+                  <SidebarMenuAction
+                    className="relative top-0 -mr-2"
+                    onClick={() => {
+                      setNewListDialogOpen(true);
+                    }}
+                  >
+                    <Plus />
+                  </SidebarMenuAction>
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {lists?.map((list) => (
+                      <SidebarMenuListItem
+                        key={list.id}
+                        list={list}
+                        active={pathName === `/list/${list.id}`}
+                        onRename={() => {
+                          setRenamedList(list);
+                        }}
+                        onDelete={() => {
+                          setDeletedListID(list.id);
+                        }}
+                      />
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+            {user !== undefined && (
+              <SidebarFooter>
+                <SidebarUserItem user={user} />
+              </SidebarFooter>
+            )}
+          </>
+        ) : (
+          <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">
+            {listError === ToDoListError.NoConnection &&
+            userError === ToDoListError.NoConnection
+              ? "No connection."
+              : "Something went wrong."}
+          </div>
+        )}
+      </Sidebar>
+      {children}
       <NewListDialog
         open={newListDialogOpen}
         onClose={() => {
@@ -129,7 +130,15 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
           if (deletedListID !== undefined) void deleteList(deletedListID);
         }}
       />
-    </>
+    </SidebarProvider>
+  );
+};
+
+const MainLayout = ({ children }: { children: ReactNode }) => {
+  return (
+    <UserProvider>
+      <MainLayoutContent>{children}</MainLayoutContent>
+    </UserProvider>
   );
 };
 
