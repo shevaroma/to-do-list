@@ -1,13 +1,18 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, SunMoon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -18,10 +23,14 @@ import {
 } from "@/components/ui/sidebar";
 import User from "@/lib/user";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { themes } from "@/lib/utils";
 
 const SidebarUserItem = ({ user }: { user: User }) => {
   const router = useRouter();
   const { isMobile } = useSidebar();
+  const { theme, setTheme } = useTheme();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -67,6 +76,26 @@ const SidebarUserItem = ({ user }: { user: User }) => {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <SunMoon className="size-4 mr-2 text-muted-foreground" /> Theme
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {Object.keys(themes).map((key) => (
+                    <DropdownMenuCheckboxItem
+                      key={key}
+                      checked={theme === key}
+                      onCheckedChange={() => {
+                        setTheme(key);
+                      }}
+                    >
+                      {themes[key]}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem
               onClick={() => {
                 router.push("/settings");
