@@ -1,9 +1,5 @@
-import Header from "@/app/(main)/header";
+import ListPageContent from "@/app/(main)/list-page-content";
 
-const InboxPage = () => (
-  <div className="w-full">
-    <Header title={"Inbox"} />
-  </div>
-);
+const InboxPage = () => <ListPageContent />;
 
 export default InboxPage;

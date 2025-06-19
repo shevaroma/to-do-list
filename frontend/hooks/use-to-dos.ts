@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ToDo from "@/lib/to-do";
 import { toast } from "sonner";
 import ToDoListError from "@/lib/to-do-list-error";
 
-const useToDos = () => {
+const useToDos = (listID?: string) => {
   const [toDos, setToDos] = useState<ToDo[]>();
   const [toDoError, setToDoError] = useState<ToDoListError>();
-  const getToDos = async () => {
+  const getToDos = useCallback(async () => {
     try {
-      const response = await fetch(`/api/to-dos`);
+      const response = await fetch(
+        `/api/to-dos${listID !== undefined ? `?todo_list_id=${listID}` : ""}`,
+      );
       if (!response.ok) {
         setToDos(undefined);
         setToDoError(ToDoListError.Unknown);
@@ -20,7 +22,7 @@ const useToDos = () => {
       setToDos(undefined);
       setToDoError(ToDoListError.NoConnection);
     }
-  };
+  }, [listID]);
   const createToDo = async (toDo: ToDo) => {
     try {
       const response = await fetch(`/api/to-dos`, {
@@ -71,7 +73,7 @@ const useToDos = () => {
   };
   useEffect(() => {
     void getToDos();
-  }, []);
+  }, [getToDos]);
   return { toDos, toDoError, createToDo, updateToDo, deleteToDo };
 };
 

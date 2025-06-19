@@ -55,18 +55,13 @@ const Settings = () => {
   const handleUpdateEmail = async () => {
     if (!newEmail.trim() || newEmail === email) return;
     await updateUserEmail({ email: newEmail });
-    toast.success("Email updated successfully.");
+    toast.success("Email changed.");
     setEmail("");
   };
 
   const handleUpdatePassword = async () => {
-    if (!currPassword || !newPassword || !confirmPassword) {
-      toast.error("Please fill in all password fields.");
-      return;
-    }
-
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords don't match");
+      toast.error("Passwords don’t match.");
       return;
     }
 
@@ -76,12 +71,12 @@ const Settings = () => {
         password: newPassword,
       });
 
-      toast.success("Password updated successfully.");
+      toast.success("Password changed.");
       setCurrPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch {
-      toast.error("Current password doesn't match.");
+      toast.error("Wrong current password.");
     }
   };
 
@@ -91,10 +86,10 @@ const Settings = () => {
       await deleteUser(String(user.id));
       document.cookie =
         "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      toast.success("Account deleted successfully.");
+      toast.success("Account deleted.");
       router.push("/sign-up");
     } catch {
-      toast.error("Failed to delete account.");
+      toast.error("Something went wrong.");
     }
   };
 
@@ -121,15 +116,14 @@ const Settings = () => {
                     className="w-1/2"
                     placeholder="Enter your display name"
                     value={displayName}
-                    maxLength={32}
+                    pattern="^(?!\s*$).+"
+                    title="Can’t be empty."
                     onChange={(e) => setDisplayName(e.target.value)}
                   />
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center pt-4">
-                  <CardDescription>
-                    Maximum allowed length is 32 characters.
-                  </CardDescription>
+                  <CardDescription>This can’t be empty.</CardDescription>
                   <Button
                     disabled={isDisplayNameUnchanged}
                     onClick={handleUpdateDisplayName}
@@ -226,6 +220,7 @@ const Settings = () => {
                       className="w-1/2"
                       value={newPassword}
                       pattern="^.{8,}$"
+                      title="At least 8 characters."
                       onChange={(e) => setNewPassword(e.target.value)}
                     />
                   </div>
@@ -240,6 +235,7 @@ const Settings = () => {
                       className="w-1/2"
                       value={confirmPassword}
                       pattern="^.{8,}$"
+                      title="At least 8 characters."
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                   </div>

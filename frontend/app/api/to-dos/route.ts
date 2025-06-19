@@ -1,11 +1,16 @@
 import { cookies } from "next/headers";
 
-export const GET = async () =>
-  fetch(`${process.env.API_BASE_URL}/todos`, {
-    headers: {
-      Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
+export const GET = async (request: Request) => {
+  const searchParams = `${new URL(request.url).searchParams}`;
+  return fetch(
+    `${process.env.API_BASE_URL}/todos${searchParams.length !== 0 ? `?${searchParams}` : ""}`,
+    {
+      headers: {
+        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
+      },
     },
-  });
+  );
+};
 
 export const POST = async (request: Request) => {
   const { title, description, due_date, priority, todo_list_id } =
