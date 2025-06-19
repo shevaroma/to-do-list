@@ -34,7 +34,9 @@ const useToDos = (listID?: string) => {
         toast.error("Something went wrong.");
         return;
       }
+      const created = await response.json();
       await getToDos();
+      return created;
     } catch {
       toast.error("No connection.");
     }

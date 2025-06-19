@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Header from "@/app/(main)/header";
 import useToDos from "@/hooks/use-to-dos";
 import ToDoListError from "@/lib/to-do-list-error";
+import TodoButton from "@/app/(main)/todo-add-button";
 
 const ListPageContent = ({ listID }: { listID?: string }) => {
   const [name, setName] = useState(listID === undefined ? "Inbox" : undefined);
   const [nameError, setNameError] = useState<ToDoListError>();
-  const { toDos, toDoError } = useToDos(listID);
+  const { toDoError } = useToDos(listID);
   useEffect(() => {
     if (listID === undefined) return;
     (async () => {
@@ -29,9 +30,8 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
   return (
     <div className="w-full flex flex-col">
       <Header title={name} />
-      {nameError === undefined && toDoError === undefined ? (
-        <pre className="p-4">{JSON.stringify(toDos)}</pre>
-      ) : (
+      <TodoButton listID={listID} />
+      {nameError === undefined && toDoError === undefined ? null : (
         <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">
           {nameError === ToDoListError.NoConnection &&
           toDoError === ToDoListError.NoConnection
