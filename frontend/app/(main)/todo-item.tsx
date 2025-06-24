@@ -12,14 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import TodoItemEdit from "@/app/(main)/todo-item-edit";
 
 type TodoItemProps = {
   todo: ToDo;
   onToggleComplete: (id: string) => void;
   onDeleteTodo: (id: string) => void;
   isEditingInline?: boolean;
-  onStartEdit?: (id: string) => void;
+  onStartEdit: (id: string) => void;
   onSaveEdit?: (todo: ToDo) => void;
   onCancelEdit?: (id: string) => void;
 };
@@ -28,35 +27,22 @@ const TodoItem = ({
   todo,
   onToggleComplete,
   onDeleteTodo,
-  isEditingInline = false,
   onStartEdit,
-  onSaveEdit,
-  onCancelEdit,
 }: TodoItemProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  if (isEditingInline && onSaveEdit && onCancelEdit) {
-    return (
-      <TodoItemEdit todo={todo} onSave={onSaveEdit} onCancel={onCancelEdit} />
-    );
-  }
-
-  const handleClick = () => {
-    if (onStartEdit) {
-      onStartEdit(todo.id);
-    }
-  };
-
   const getDaysLeft = (deadline: string | null) => {
     if (!deadline) return null;
+
     const end = new Date(deadline);
     const now = new Date();
-    const diff = Math.ceil(
-      (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-    );
-    return diff >= 0 ? diff : null;
+    end.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    return Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   };
-  const daysLeft = getDaysLeft(todo.due_date);
+
+  const daysLeft: number | null = getDaysLeft(todo.due_date);
 
   return (
     <div
@@ -65,7 +51,7 @@ const TodoItem = ({
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
+      onClick={() => onStartEdit(todo.id)}
     >
       <div className="flex items-center flex-1">
         <Checkbox
@@ -96,11 +82,17 @@ const TodoItem = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        {daysLeft !== null && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {daysLeft} day{daysLeft !== 1 ? "s" : ""} left
-          </span>
-        )}
+        {todo.due_date &&
+          !todo.is_completed &&
+          (daysLeft !== null ? (
+            daysLeft < 0 ? (
+              <span className="text-xs text-red-500 font-medium">Overdue</span>
+            ) : (
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                {daysLeft} day{daysLeft !== 1 ? "s" : ""} left
+              </span>
+            )
+          ) : null)}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}

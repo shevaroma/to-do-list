@@ -1,3 +1,11 @@
+export type ToDoBase = {
+  title: string;
+  description?: string | null;
+  due_date?: string | null;
+  priority?: number | null;
+  todo_list_id?: string | null;
+};
+
 type ToDo = {
   id: string;
   title: string;
@@ -9,6 +17,6 @@ type ToDo = {
   owner_id: number;
   created_at: string;
   updated_at: string;
-};
+} & ToDoBase;
 
 export default ToDo;

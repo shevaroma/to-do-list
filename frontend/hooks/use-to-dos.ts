@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { ToDoBase } from "@/lib/to-do";
 import ToDo from "@/lib/to-do";
 import { toast } from "sonner";
 import ToDoListError from "@/lib/to-do-list-error";
@@ -23,7 +24,7 @@ const useToDos = (listID?: string) => {
       setToDoError(ToDoListError.NoConnection);
     }
   }, [listID]);
-  const createToDo = async (toDo: ToDo) => {
+  const createToDo = async (toDo: ToDoBase) => {
     try {
       const response = await fetch(`/api/to-dos`, {
         method: "POST",
