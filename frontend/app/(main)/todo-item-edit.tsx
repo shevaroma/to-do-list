@@ -147,7 +147,6 @@ const TodoItemEdit = ({ todo, onSave, onCancel }: TodoItemEditProps) => {
                 </Button>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">None</SelectItem>
                 <SelectItem value="3">Low</SelectItem>
                 <SelectItem value="2">Medium</SelectItem>
                 <SelectItem value="1">High</SelectItem>

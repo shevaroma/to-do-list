@@ -17,7 +17,7 @@ import { ReactNode, useState } from "react";
 import NewListDialog from "./new-list-dialog";
 import { Plus } from "lucide-react";
 import RenameListDialog from "./rename-list-dialog";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import SidebarMenuListItem from "./sidebar-menu-list-item";
 import List from "@/lib/list";
@@ -36,6 +36,7 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
   const [deletedListID, setDeletedListID] = useState<string>();
   const user = userContext?.user;
   const userError = userContext?.userError;
+  const router = useRouter();
 
   return (
     <SidebarProvider>
@@ -126,8 +127,12 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
         onClose={() => {
           setDeletedListID(undefined);
         }}
-        onDelete={() => {
-          if (deletedListID !== undefined) void deleteList(deletedListID);
+        onDelete={async () => {
+          if (deletedListID !== undefined) {
+            await deleteList(deletedListID);
+            setDeletedListID(undefined);
+            router.push("/");
+          }
         }}
       />
     </SidebarProvider>

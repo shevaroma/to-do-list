@@ -1,5 +1,4 @@
 export const priorityColors: Record<number, string> = {
-  0: "bg-green-400",
   1: "bg-red-400",
   2: "bg-yellow-400",
   3: "bg-blue-400",
@@ -11,10 +10,8 @@ export const getPriorityColor = (priority: number | null) => {
       return "text-red-500";
     case 2:
       return "text-yellow-500";
-    case 3:
-      return "text-blue-500";
     default:
-      return "text-gray-400";
+      return "text-blue-500";
   }
 };
 
@@ -24,9 +21,7 @@ export const getPriorityLabel = (priority: number | null) => {
       return "High";
     case 2:
       return "Medium";
-    case 3:
-      return "Low";
     default:
-      return "None";
+      return "Low";
   }
 };

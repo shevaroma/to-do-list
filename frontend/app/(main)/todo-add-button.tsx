@@ -46,10 +46,27 @@ const TodoAddButton = ({ listID }: { listID?: string }) => {
     const todo = toDos?.find((t) => t.id === id);
     if (!todo) return;
     await updateToDo({ ...todo, is_completed: !todo.is_completed });
+
+    if (!todo.is_completed) {
+      setTimeout(async () => {
+        await deleteToDo(Number(id));
+      }, 1500);
+    }
   };
 
   const handleStartEdit = (id: string) => setEditingInlineId(id);
-  const handleCancelEdit = () => setEditingInlineId(null);
+
+  const handleCancelEdit = (id: string) => {
+    const todo = toDos?.find((t) => t.id === id);
+    if (
+      todo &&
+      !todo.title.trim() &&
+      (!todo.description || !todo.description.trim())
+    ) {
+      handleDeleteTodo(id);
+    }
+    setEditingInlineId(null);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
