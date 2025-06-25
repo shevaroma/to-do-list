@@ -1,22 +1,9 @@
 "use client";
 
 import { createContext, ReactNode, useContext } from "react";
-import User from "@/lib/user";
-import ToDoListError from "@/lib/to-do-list-error";
 import useUser from "@/hooks/use-user";
 
-type UserContextType = {
-  user: User | undefined;
-  userError: ToDoListError | undefined;
-  getUser: () => Promise<void>;
-  updateUserName: (user: { display_name: string }) => Promise<void>;
-  updateUserEmail: (user: { email: string }) => Promise<void>;
-  updateUserPassword: (user: {
-    password: string;
-    current_password: string;
-  }) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
-};
+type UserContextType = ReturnType<typeof useUser>;
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
