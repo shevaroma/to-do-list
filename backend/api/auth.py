@@ -62,7 +62,7 @@ def reset_confirm(
     except jwt.PyJWTError:
         raise HTTPException(status_code=400, detail="Invalid token")
 
-    repository.update_password(email, request.new_password)
+    repository.update_password(email, None, request.new_password)
     return Response(content="Password reset successful", status_code=200)
 
 

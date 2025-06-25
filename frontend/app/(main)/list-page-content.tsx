@@ -9,7 +9,7 @@ import ToDoDialog from "@/app/(main)/to-do-dialog";
 import ToDo from "@/lib/to-do";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import useLists from "@/hooks/use-lists";
+import { useListContext } from "@/app/contexts/list-context";
 
 const ListPageContent = ({ listID }: { listID?: string }) => {
   const [name, setName] = useState(listID === undefined ? "Inbox" : undefined);
@@ -18,7 +18,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
   const [editedToDo, setEditedToDo] = useState<ToDo>();
   const [addingToDo, setAddingToDo] = useState(false);
   const { toDos, createToDo, updateToDo, deleteToDo } = useToDos(listID);
-  const { lists } = useLists();
+  const { lists } = useListContext();
 
   useEffect(() => {
     if (listID === undefined) return;
@@ -79,7 +79,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
               description,
               due_date: dueDate,
               priority,
-              todo_list_id: todoListId || null,
+              todo_list_id: todoListId === "-1" ? null : todoListId,
             });
           } else if (editedToDo !== undefined) {
             updateToDo({
@@ -88,7 +88,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
               description: description || null,
               due_date: dueDate,
               priority: priority || null,
-              todo_list_id: todoListId || null,
+              todo_list_id: todoListId === "-1" ? null : todoListId,
             });
           }
         }}
@@ -96,7 +96,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
         description={editedToDo?.description || ""}
         dueDate={editedToDo?.due_date || null}
         priority={editedToDo?.priority || null}
-        todoListId={editedToDo?.todo_list_id || listID || null}
+        todoListId={editedToDo?.todo_list_id || listID || "-1"}
         lists={lists || []}
       />
     </>

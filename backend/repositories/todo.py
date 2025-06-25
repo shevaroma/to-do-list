@@ -19,6 +19,7 @@ class TodoRepository:
             query = query.filter(Todo.todo_list_id == None)
         else:
             query = query.filter(Todo.todo_list_id == todo_list_id)
+        query = query.order_by(Todo.due_date)
         return query.all()
 
     def create_todo(self, todo_in: TodoCreate, user_id: int):

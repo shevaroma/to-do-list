@@ -17,11 +17,6 @@ const TodoAddButton = ({
   updateToDo: (toDo: ToDo) => Promise<void>;
   deleteToDo: (id: number) => Promise<void>;
 }) => {
-  const todos = [...(toDos ?? [])].sort(
-    (a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  );
-
   const handleDeleteTodo = async (id: string) => {
     await deleteToDo(Number(id));
   };
@@ -32,7 +27,9 @@ const TodoAddButton = ({
     await updateToDo({ ...todo, is_completed: !todo.is_completed });
   };
 
-  if (todos.length === 0) {
+  if (toDos === undefined) return null;
+
+  if (toDos?.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
         <p className="text-sm">No todos yet</p>
@@ -45,7 +42,7 @@ const TodoAddButton = ({
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <ul className="space-y-2">
           <AnimatePresence>
-            {todos
+            {toDos
               .filter((toDo) => !toDo.is_completed)
               .map((todo) => (
                 <motion.li
@@ -67,7 +64,7 @@ const TodoAddButton = ({
               ))}
           </AnimatePresence>
         </ul>
-        {todos.some((todo) => todo.is_completed) && (
+        {toDos.some((todo) => todo.is_completed) && (
           <>
             <div className="pt-8">
               <Separator className="my-4" />
@@ -78,7 +75,7 @@ const TodoAddButton = ({
           </>
         )}
         <ul>
-          {todos
+          {toDos
             .filter((toDo) => toDo.is_completed)
             .map((todo) => (
               <motion.li

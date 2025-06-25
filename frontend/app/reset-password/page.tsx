@@ -32,7 +32,7 @@ const ResetPasswordPage = () => {
         return;
       }
       toast.success("Password reset.");
-      router.push("/sign-in");
+      router.push("/");
     } catch {
       toast.error("No connection.");
     }

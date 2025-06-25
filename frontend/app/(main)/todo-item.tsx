@@ -46,14 +46,16 @@ const TodoItem = ({
 
   return (
     <div
-      className={`flex items-center p-4 rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-all cursor-pointer ${
+      className={`flex items-center px-4 rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-all ${
         todo.is_completed ? "opacity-60" : ""
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onStartEdit(todo.id)}
     >
-      <div className="flex items-center flex-1">
+      <div
+        className="flex items-center flex-1 py-4 cursor-pointer"
+        onClick={() => onStartEdit(todo.id)}
+      >
         <Checkbox
           checked={todo.is_completed || false}
           onClick={(e) => e.stopPropagation()}
@@ -101,7 +103,7 @@ const TodoItem = ({
         >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700">
+              <button className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer">
                 <Ellipsis className="h-4 w-4 text-zinc-500" />
               </button>
             </DropdownMenuTrigger>

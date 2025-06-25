@@ -91,11 +91,15 @@ class UserRepository:
         )
         return token
 
-    def update_password(self, email: str, current_password: str, new_password: str):
+    def update_password(
+        self, email: str, current_password: str | None, new_password: str
+    ):
         user = self.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        if not self.verify_password(current_password, user.hashed_password):
+        if current_password and not self.verify_password(
+            current_password, user.hashed_password
+        ):
             raise HTTPException(status_code=400, detail="Current password is incorrect")
         user.hashed_password = self.hash_password(new_password)
         self._db.commit()

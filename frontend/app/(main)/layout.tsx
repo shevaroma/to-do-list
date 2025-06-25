@@ -22,14 +22,15 @@ import Link from "next/link";
 import SidebarMenuListItem from "./sidebar-menu-list-item";
 import List from "@/lib/list";
 import DeleteListDialog from "./delete-list-dialog";
-import useLists from "@/hooks/use-lists";
 import SidebarUserItem from "@/app/(main)/sidebar-user-item";
 import ToDoListError from "@/lib/to-do-list-error";
 import { UserProvider, useUserContextSafe } from "@/app/contexts/user-context";
+import { ListProvider, useListContext } from "@/app/contexts/list-context";
 
 const MainLayoutContent = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
-  const { lists, listError, createList, renameList, deleteList } = useLists();
+  const { lists, listError, createList, renameList, deleteList } =
+    useListContext();
   const userContext = useUserContextSafe();
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [renamedList, setRenamedList] = useState<List>();
@@ -142,7 +143,9 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
 const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <UserProvider>
-      <MainLayoutContent>{children}</MainLayoutContent>
+      <ListProvider>
+        <MainLayoutContent>{children}</MainLayoutContent>
+      </ListProvider>
     </UserProvider>
   );
 };
