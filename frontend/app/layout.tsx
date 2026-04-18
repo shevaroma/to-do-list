@@ -1,20 +1,15 @@
 import { Toaster } from "sonner";
 import "./globals.css";
 import { ReactNode } from "react";
-import { ThemeProvider } from "next-themes";
+import Providers from "./providers";
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang="en" suppressHydrationWarning>
     <body>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+      <Providers>
         {children}
         <Toaster richColors />
-      </ThemeProvider>
+      </Providers>
     </body>
   </html>
 );
