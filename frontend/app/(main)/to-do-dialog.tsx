@@ -98,13 +98,13 @@ const ToDoDialog = ({
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             placeholder="What needs to be done?"
-            className="w-full bg-transparent text-base font-medium border-none p-0 h-auto focus:outline-none focus:ring-0 focus-visible:ring-0 placeholder:text-muted-foreground shadow-none rounded-none"
+            className="h-auto w-full rounded-none border-none bg-transparent p-0 text-base font-medium text-foreground shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:border-transparent focus-visible:ring-0"
           />
           <Textarea
             value={newDescription || ""}
             onChange={(e) => setNewDescription(e.target.value)}
             placeholder="Add some details... (optional)"
-            className="w-full bg-transparent resize-none text-sm border-none p-0 min-h-[60px] focus:outline-none focus:ring-0 focus-visible:ring-0 placeholder:text-muted-foreground shadow-none rounded-none"
+            className="min-h-[60px] w-full resize-none rounded-none border-none bg-transparent p-0 text-sm text-foreground shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:border-transparent focus-visible:ring-0"
           />
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
@@ -160,7 +160,7 @@ const ToDoDialog = ({
                 value={newListId}
                 onValueChange={(value) => setNewListId(value)}
               >
-                <SelectTrigger className="h-12 px-2 text-gray-900">
+                <SelectTrigger className="h-12 bg-background/70 px-2 text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
