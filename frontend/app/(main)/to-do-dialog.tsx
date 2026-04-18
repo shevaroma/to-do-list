@@ -67,13 +67,11 @@ const ToDoDialog = ({
     setNewDueDate(dueDate);
     setNewPriority(priority);
     setNewListId(todoListId.toString());
-  }, [title, description, dueDate, priority, todoListId]);
-
-  useEffect(() => {
-    if (titleInputRef.current) {
+    setIsCalendarOpen(false);
+    if (open && titleInputRef.current) {
       titleInputRef.current.focus();
     }
-  }, []);
+  }, [open, title, description, dueDate, priority, todoListId]);
 
   const handleSave = () => {
     if (newTitle.trim()) {
