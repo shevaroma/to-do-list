@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { toClientResponse } from "@/lib/proxy-response";
 
 export const POST = async (request: Request) => {
   const { email, password } = await request.json();
@@ -7,7 +8,7 @@ export const POST = async (request: Request) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  if (!response.ok) return response;
+  if (!response.ok) return toClientResponse(response);
   const nextResponse = NextResponse.json({});
   nextResponse.cookies.set({
     name: "access_token",

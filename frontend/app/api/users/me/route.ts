@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
+import { toClientResponse } from "@/lib/proxy-response";
 
 export const GET = async () =>
-  fetch(`${process.env.API_BASE_URL}/users/me`, {
-    headers: {
-      Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-    },
-  });
+  toClientResponse(
+    await fetch(`${process.env.API_BASE_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
+      },
+    }),
+  );
 
 export const PUT = async (request: Request) => {
   const { display_name, email, password, current_password } =
@@ -23,6 +26,8 @@ export const PUT = async (request: Request) => {
       current_password,
     }),
   });
+  if (!res.ok) return toClientResponse(res);
+
   const data = await res.json();
   if (data.access_token) {
     (await cookies()).set("access_token", data.access_token, { path: "/" });
@@ -34,9 +39,11 @@ export const PUT = async (request: Request) => {
 };
 
 export const DELETE = async () =>
-  fetch(`${process.env.API_BASE_URL}/users/me`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-    },
-  });
+  toClientResponse(
+    await fetch(`${process.env.API_BASE_URL}/users/me`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
+      },
+    }),
+  );

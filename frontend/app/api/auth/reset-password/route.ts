@@ -1,11 +1,15 @@
+import { toClientResponse } from "@/lib/proxy-response";
+
 export const POST = async (request: Request) => {
   const { token, newPassword } = await request.json();
-  return fetch(`${process.env.API_BASE_URL}/auth/reset-confirm`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      token,
-      new_password: newPassword,
+  return toClientResponse(
+    await fetch(`${process.env.API_BASE_URL}/auth/reset-confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        new_password: newPassword,
+      }),
     }),
-  });
+  );
 };
