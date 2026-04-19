@@ -17,7 +17,8 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
   const { toDoError } = useToDos(listID);
   const [editedToDo, setEditedToDo] = useState<ToDo>();
   const [addingToDo, setAddingToDo] = useState(false);
-  const { toDos, createToDo, updateToDo, deleteToDo } = useToDos(listID);
+  const { toDos, createToDo, updateToDo, deleteToDo, deleteCompletedToDos } =
+    useToDos(listID);
   const { lists } = useListContext();
 
   useEffect(() => {
@@ -56,6 +57,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
           createToDo={createToDo}
           updateToDo={updateToDo}
           deleteToDo={deleteToDo}
+          deleteCompletedToDos={() => deleteCompletedToDos(listID)}
         />
         {nameError === undefined && toDoError === undefined ? null : (
           <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">

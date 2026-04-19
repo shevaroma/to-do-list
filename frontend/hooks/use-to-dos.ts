@@ -74,10 +74,38 @@ const useToDos = (listID?: string) => {
       toast.error("No connection.");
     }
   };
+
+  const deleteCompletedToDos = async (todoListId?: string) => {
+    try {
+      const response = await fetch(`/api/to-dos`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          completed: true,
+          todo_list_id: todoListId ?? null,
+        }),
+      });
+      if (!response.ok) {
+        toast.error("Something went wrong.");
+        return;
+      }
+      await getToDos();
+    } catch {
+      toast.error("No connection.");
+    }
+  };
+
   useEffect(() => {
     void getToDos();
   }, [getToDos]);
-  return { toDos, toDoError, createToDo, updateToDo, deleteToDo };
+  return {
+    toDos,
+    toDoError,
+    createToDo,
+    updateToDo,
+    deleteToDo,
+    deleteCompletedToDos,
+  };
 };
 
 export default useToDos;

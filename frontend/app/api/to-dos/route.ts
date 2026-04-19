@@ -66,16 +66,20 @@ export const PUT = async (request: Request) => {
   );
 };
 
-export const DELETE = async (request: Request) =>
-  toClientResponse(
-    await fetch(
-      `${process.env.API_BASE_URL}/todos/${(await request.json()).id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-        },
+export const DELETE = async (request: Request) => {
+  const { id, completed, todo_list_id } = await request.json();
+
+  const url = completed
+    ? `${process.env.API_BASE_URL}/todos/completed${todo_list_id ? `?todo_list_id=${todo_list_id}` : ""}`
+    : `${process.env.API_BASE_URL}/todos/${id}`;
+
+  return toClientResponse(
+    await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
       },
-    ),
+    }),
   );
+};

@@ -4,18 +4,21 @@ import type ToDo from "@/lib/to-do";
 import { AnimatePresence, motion } from "framer-motion";
 import TodoItem from "@/app/(main)/todo-item";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 const TodoAddButton = ({
   onClick,
   toDos,
   updateToDo,
   deleteToDo,
+  deleteCompletedToDos,
 }: {
   onClick: (toDo: ToDo) => void;
   toDos?: ToDo[];
   createToDo: (toDo: ToDo) => Promise<void>;
   updateToDo: (toDo: ToDo) => Promise<void>;
   deleteToDo: (id: number) => Promise<void>;
+  deleteCompletedToDos: () => Promise<void>;
 }) => {
   const handleDeleteTodo = async (id: string) => {
     await deleteToDo(Number(id));
@@ -69,8 +72,19 @@ const TodoAddButton = ({
             <div className="pt-8">
               <Separator className="my-4" />
             </div>
-            <div className="flex justify-start text-zinc-400 my-2">
-              <p className="text-base pl-2">Completed</p>
+            <div className="my-2 flex items-center justify-between text-zinc-400">
+              <p className="pl-2 text-base">Completed</p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-zinc-500 hover:text-zinc-300"
+                onClick={() => {
+                  void deleteCompletedToDos();
+                }}
+              >
+                Delete all
+              </Button>
             </div>
           </>
         )}
