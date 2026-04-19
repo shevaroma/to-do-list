@@ -7,22 +7,24 @@ from db.models.todo import Todo
 
 
 class TodoRepository:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session = Depends(get_db)) -> None:
         self._db = db
 
-    def get_todo_by_id(self, todo_id: int):
+    def get_todo_by_id(self, todo_id: int) -> Todo | None:
         return self._db.query(Todo).filter(Todo.id == todo_id).first()
 
-    def get_todos_by_list(self, user_id: int, todo_list_id: int = None):
+    def get_todos_by_list(
+        self, user_id: int, todo_list_id: int | None = None
+    ) -> list[Todo]:
         query = self._db.query(Todo).filter(Todo.owner_id == user_id)
         if todo_list_id is None:
-            query = query.filter(Todo.todo_list_id == None)
+            query = query.filter(Todo.todo_list_id.is_(None))
         else:
             query = query.filter(Todo.todo_list_id == todo_list_id)
         query = query.order_by(Todo.due_date)
         return query.all()
 
-    def create_todo(self, todo_in: TodoCreate, user_id: int):
+    def create_todo(self, todo_in: TodoCreate, user_id: int) -> Todo:
         todo = Todo(
             **todo_in.model_dump(),
             owner_id=user_id,
@@ -32,7 +34,7 @@ class TodoRepository:
         self._db.refresh(todo)
         return todo
 
-    def update_todo(self, todo_id: int, todo_in: TodoUpdate):
+    def update_todo(self, todo_id: int, todo_in: TodoUpdate) -> Todo | None:
         todo = self.get_todo_by_id(todo_id)
         if not todo:
             return None
@@ -43,9 +45,17 @@ class TodoRepository:
         self._db.refresh(todo)
         return todo
 
-    def delete_todo(self, todo_id: int):
+    def delete_todo(self, todo_id: int) -> None:
         todo = self.get_todo_by_id(todo_id)
         if todo:
             self._db.delete(todo)
             self._db.commit()
-        return todo
+
+    def delete_completed_todos(
+        self, user_id: int, todo_list_id: int | None = None
+    ) -> None:
+        query = self._db.query(Todo).filter(Todo.owner_id == user_id, Todo.is_completed)
+        if todo_list_id is not None:
+            query = query.filter(Todo.todo_list_id == todo_list_id)
+        query.delete()
+        self._db.commit()

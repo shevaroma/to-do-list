@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional
+from typing import cast
 
 from fastapi import Depends, HTTPException, BackgroundTasks
 from passlib.context import CryptContext
@@ -17,7 +17,7 @@ BASE_URL = settings.base_url
 
 
 class UserRepository:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session = Depends(get_db)) -> None:
         self._db = db
 
     @staticmethod
@@ -28,14 +28,14 @@ class UserRepository:
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)
 
-    def get_user_by_id(self, user_id: int) -> Optional[User]:
+    def get_user_by_id(self, user_id: int) -> User | None:
         user = self._db.query(User).filter(User.id == user_id).first()
         return user
 
-    def get_user_by_email(self, email: str):
+    def get_user_by_email(self, email: str) -> User | None:
         return self._db.query(User).filter(User.email == email).first()
 
-    def create_user(self, user_in: models.UserCreate):
+    def create_user(self, user_in: models.UserCreate) -> User:
         user = User(
             email=str(user_in.email),
             hashed_password=self.hash_password(user_in.password),
@@ -46,15 +46,15 @@ class UserRepository:
         self._db.refresh(user)
         return user
 
-    def authenticate_user(self, email: str, password: str) -> Optional[User]:
+    def authenticate_user(self, email: str, password: str) -> User | None:
         user = self.get_user_by_email(email)
-        if user and self.verify_password(password, user.hashed_password):
+        if user and self.verify_password(password, cast(str, user.hashed_password)):
             return user
         return None
 
     def update_user(
         self, user_id: int, user_in: models.UserUpdate
-    ) -> Optional[models.User]:
+    ) -> models.User | None:
         user = self.get_user_by_id(user_id)
         if not user:
             return None
@@ -66,12 +66,14 @@ class UserRepository:
         if "password" in update_data:
             current_password = update_data.get("current_password")
             if not current_password or not self.verify_password(
-                current_password, user.hashed_password
+                current_password, cast(str, user.hashed_password)
             ):
                 raise HTTPException(
                     status_code=400, detail="Current password is incorrect"
                 )
-            user.hashed_password = self.hash_password(update_data["password"])
+            setattr(
+                user, "hashed_password", self.hash_password(update_data["password"])
+            )
         self._db.commit()
         self._db.refresh(user)
         return models.User.model_validate(user)
@@ -93,23 +95,22 @@ class UserRepository:
 
     def update_password(
         self, email: str, current_password: str | None, new_password: str
-    ):
+    ) -> User:
         user = self.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if current_password and not self.verify_password(
-            current_password, user.hashed_password
+            current_password, cast(str, user.hashed_password)
         ):
             raise HTTPException(status_code=400, detail="Current password is incorrect")
-        user.hashed_password = self.hash_password(new_password)
+        setattr(user, "hashed_password", self.hash_password(new_password))
         self._db.commit()
         self._db.refresh(user)
         return user
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int) -> None:
         user = self.get_user_by_id(user_id)
         if not user:
-            return None
+            return
         self._db.delete(user)
         self._db.commit()
-        return user

@@ -14,5 +14,5 @@ class TodoList(Base):
     owner = relationship("User", back_populates="todo_lists")
     todos = relationship("Todo", back_populates="todo_list", cascade="all, delete")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<TodoList(id={self.id}, title={self.title}, owner_id={self.owner_id})>"

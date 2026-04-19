@@ -7,7 +7,7 @@ EMAIL_ADDRESS = settings.email_address
 EMAIL_PASSWORD = settings.email_password
 
 
-def send_email(to_email: str, subject: str, body: str):
+def send_email(to_email: str, subject: str, body: str) -> None:
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
     sender_email = EMAIL_ADDRESS

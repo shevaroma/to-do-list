@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from common.utils._jwt import SECRET_KEY, ALGORITHM
 from db.db_session import get_db
+from db.models.user import User
 from repositories.user import UserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -12,11 +13,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-):
+) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
-        if not email:
+        if not isinstance(email, str) or not email:
             raise HTTPException(status_code=401, detail="Invalid token")
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

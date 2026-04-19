@@ -23,5 +23,5 @@ class Todo(Base):
     owner = relationship("User", back_populates="todos")
     todo_list = relationship("TodoList", back_populates="todos")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Todo(id={self.id}, name={self.title}, due_date={self.due_date}, priority={self.priority})>"

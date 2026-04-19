@@ -7,23 +7,23 @@ from db.models.todo_list import TodoList
 
 
 class TodoListRepository:
-    def __init__(self, db: Session = Depends(get_db)):
+    def __init__(self, db: Session = Depends(get_db)) -> None:
         self._db = db
 
-    def get_list_by_id(self, list_id: int):
+    def get_list_by_id(self, list_id: int) -> TodoList | None:
         return self._db.query(TodoList).filter(TodoList.id == list_id).first()
 
-    def get_all_lists_for_user(self, user_id: int):
+    def get_all_lists_for_user(self, user_id: int) -> list[TodoList]:
         return self._db.query(TodoList).filter(TodoList.owner_id == user_id).all()
 
-    def create_list(self, list_in: TodoListCreate, user_id: int):
+    def create_list(self, list_in: TodoListCreate, user_id: int) -> TodoList:
         todo_list = TodoList(title=list_in.title, owner_id=user_id)
         self._db.add(todo_list)
         self._db.commit()
         self._db.refresh(todo_list)
         return todo_list
 
-    def update_list(self, list_id: int, list_in: TodoListUpdate):
+    def update_list(self, list_id: int, list_in: TodoListUpdate) -> TodoList | None:
         todo_list = self.get_list_by_id(list_id)
         if not todo_list:
             return None
@@ -34,9 +34,8 @@ class TodoListRepository:
         self._db.refresh(todo_list)
         return todo_list
 
-    def delete_list(self, list_id: int):
+    def delete_list(self, list_id: int) -> None:
         todo_list = self.get_list_by_id(list_id)
         if todo_list:
             self._db.delete(todo_list)
             self._db.commit()
-        return todo_list

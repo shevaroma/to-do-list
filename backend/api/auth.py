@@ -1,5 +1,6 @@
 import jwt
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
+from typing import cast
 
 from common.models.auth import LoginResponse, ChangePasswordRequest, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/register", response_model=RegisterResponse)
 def register(
     user_in: UserCreate, repository: UserRepository = Depends(get_user_repository)
-):
+) -> RegisterResponse:
     existing_user = repository.get_user_by_email(str(user_in.email))
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -28,7 +29,7 @@ def register(
 @router.post("/login", response_model=LoginResponse)
 def login(
     request: LoginRequest, repository: UserRepository = Depends(get_user_repository)
-):
+) -> LoginResponse:
     user = repository.authenticate_user(str(request.email), request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -41,7 +42,7 @@ def reset_password(
     request: PasswordResetRequest,
     background_tasks: BackgroundTasks,
     repository: UserRepository = Depends(get_user_repository),
-):
+) -> Response:
     repository.reset_password(str(request.email), background_tasks)
     return Response(content="Password reset link sent", status_code=200)
 
@@ -51,7 +52,7 @@ def reset_password(
 def reset_confirm(
     request: PasswordResetConfirm,
     repository: UserRepository = Depends(get_user_repository),
-):
+) -> Response:
     try:
         payload = jwt.decode(request.token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
@@ -72,14 +73,16 @@ def change_password(
     request: ChangePasswordRequest,
     user: User = Depends(get_current_user),
     repository: UserRepository = Depends(get_user_repository),
-):
-    if not repository.verify_password(request.current_password, user.hashed_password):
+) -> Response:
+    if not repository.verify_password(
+        request.current_password, cast(str, user.hashed_password)
+    ):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
-    user.hashed_password = repository.hash_password(request.new_password)
+    setattr(user, "hashed_password", repository.hash_password(request.new_password))
     return Response(content="Password updated successfully", status_code=200)
 
 
 @router.get("/logout")
-def logout():
+def logout() -> Response:
     # client-side logout in frontend
     return Response(content="Logout successful", status_code=200)
