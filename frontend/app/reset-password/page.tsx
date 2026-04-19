@@ -5,22 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 
-const ResetPasswordPage = () => {
+const ResetPasswordForm = () => {
   const token = useSearchParams().get("token");
   if (!token) notFound();
+
   const router = useRouter();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState("");
+
   const resetPassword = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newPassword !== newPasswordConfirmation) {
       toast.error("Passwords don’t match.");
       return;
     }
+
     try {
       const response = await fetch(`/api/auth/reset-password`, {
         method: "POST",
@@ -31,12 +34,14 @@ const ResetPasswordPage = () => {
         toast.error("Something went wrong.");
         return;
       }
+
       toast.success("Password reset.");
       router.push("/");
     } catch {
       toast.error("No connection.");
     }
   };
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -95,6 +100,14 @@ const ResetPasswordPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const ResetPasswordPage = () => {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 };
 
