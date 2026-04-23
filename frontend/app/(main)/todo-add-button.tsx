@@ -15,7 +15,6 @@ const TodoAddButton = ({
 }: {
   onClick: (toDo: ToDo) => void;
   toDos?: ToDo[];
-  createToDo: (toDo: ToDo) => Promise<void>;
   updateToDo: (toDo: ToDo) => Promise<void>;
   deleteToDo: (id: number) => Promise<void>;
   deleteCompletedToDos: () => Promise<void>;
@@ -42,55 +41,10 @@ const TodoAddButton = ({
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <ul className="space-y-2">
-          <AnimatePresence>
-            {toDos
-              .filter((toDo) => !toDo.is_completed)
-              .map((todo) => (
-                <motion.li
-                  key={todo.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <TodoItem
-                    todo={todo}
-                    onToggleComplete={handleToggleComplete}
-                    onDeleteTodo={handleDeleteTodo}
-                    onStartEdit={() => {
-                      onClick(todo);
-                    }}
-                  />
-                </motion.li>
-              ))}
-          </AnimatePresence>
-        </ul>
-        {toDos.some((todo) => todo.is_completed) && (
-          <>
-            <div className="pt-8">
-              <Separator className="my-4" />
-            </div>
-            <div className="my-2 flex items-center justify-between text-zinc-400">
-              <p className="pl-2 text-base">Completed</p>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-xs text-zinc-500 hover:text-zinc-300"
-                onClick={() => {
-                  void deleteCompletedToDos();
-                }}
-              >
-                Delete all
-              </Button>
-            </div>
-          </>
-        )}
-        <ul>
+      <ul className="space-y-2">
+        <AnimatePresence>
           {toDos
-            .filter((toDo) => toDo.is_completed)
+            .filter((toDo) => !toDo.is_completed)
             .map((todo) => (
               <motion.li
                 key={todo.id}
@@ -109,8 +63,51 @@ const TodoAddButton = ({
                 />
               </motion.li>
             ))}
-        </ul>
-      </div>
+        </AnimatePresence>
+      </ul>
+      {toDos.some((todo) => todo.is_completed) && (
+        <>
+          <div className="pt-8">
+            <Separator className="my-4" />
+          </div>
+          <div className="my-2 flex items-center justify-between text-zinc-400">
+            <p className="pl-2 text-base">Completed</p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs text-zinc-500 hover:text-zinc-300"
+              onClick={() => {
+                void deleteCompletedToDos();
+              }}
+            >
+              Delete all
+            </Button>
+          </div>
+        </>
+      )}
+      <ul>
+        {toDos
+          .filter((toDo) => toDo.is_completed)
+          .map((todo) => (
+            <motion.li
+              key={todo.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TodoItem
+                todo={todo}
+                onToggleComplete={handleToggleComplete}
+                onDeleteTodo={handleDeleteTodo}
+                onStartEdit={() => {
+                  onClick(todo);
+                }}
+              />
+            </motion.li>
+          ))}
+      </ul>
     </div>
   );
 };

@@ -54,7 +54,6 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
         <TodoButton
           onClick={(toDo) => setEditedToDo(toDo)}
           toDos={toDos}
-          createToDo={createToDo}
           updateToDo={updateToDo}
           deleteToDo={deleteToDo}
           deleteCompletedToDos={() => deleteCompletedToDos(listID)}

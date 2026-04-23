@@ -84,8 +84,7 @@ const Settings = () => {
     if (!user?.id) return;
     try {
       await deleteUser(String(user.id));
-      document.cookie =
-        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      await fetch("/api/auth/sign-out", { method: "POST" });
       toast.success("Account deleted.");
       router.push("/sign-up");
     } catch {

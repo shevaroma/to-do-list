@@ -18,7 +18,7 @@ export const ListProvider = ({ children }: { children: ReactNode }) => {
 export const useListContext = () => {
   const context = useContext(ListContext);
   if (context === undefined) {
-    throw new Error("useUserContext must be used within a UserProvider");
+    throw new Error("useListContext must be used within a ListProvider");
   }
   return context;
 };

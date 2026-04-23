@@ -106,9 +106,8 @@ const SidebarUserItem = ({ user }: { user: User }) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                document.cookie =
-                  "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+              onClick={async () => {
+                await fetch("/api/auth/sign-out", { method: "POST" });
                 router.push("/sign-in");
               }}
             >
