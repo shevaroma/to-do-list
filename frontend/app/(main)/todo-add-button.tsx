@@ -15,7 +15,7 @@ const TodoAddButton = ({
 }: {
   onClick: (toDo: ToDo) => void;
   toDos?: ToDo[];
-  updateToDo: (toDo: ToDo) => Promise<void>;
+  updateToDo: (toDo: ToDo) => Promise<boolean>;
   deleteToDo: (id: number) => Promise<void>;
   deleteCompletedToDos: () => Promise<void>;
 }) => {

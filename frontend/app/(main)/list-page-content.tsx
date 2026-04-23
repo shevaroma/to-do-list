@@ -14,11 +14,16 @@ import { useListContext } from "@/app/contexts/list-context";
 const ListPageContent = ({ listID }: { listID?: string }) => {
   const [name, setName] = useState(listID === undefined ? "Inbox" : undefined);
   const [nameError, setNameError] = useState<ToDoListError>();
-  const { toDoError } = useToDos(listID);
   const [editedToDo, setEditedToDo] = useState<ToDo>();
   const [addingToDo, setAddingToDo] = useState(false);
-  const { toDos, createToDo, updateToDo, deleteToDo, deleteCompletedToDos } =
-    useToDos(listID);
+  const {
+    toDos,
+    toDoError,
+    createToDo,
+    updateToDo,
+    deleteToDo,
+    deleteCompletedToDos,
+  } = useToDos(listID);
   const { lists } = useListContext();
 
   useEffect(() => {
@@ -73,31 +78,42 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
           setEditedToDo(undefined);
           setAddingToDo(false);
         }}
-        onSave={(title, description, dueDate, priority, todoListId) => {
+        onSave={async (title, description, dueDate, priority, todoListId) => {
           if (addingToDo) {
-            createToDo({
+            const created = await createToDo({
               title,
               description,
               due_date: dueDate,
               priority,
-              todo_list_id: todoListId === "-1" ? null : todoListId,
+              todo_list_id: todoListId,
             });
+            if (created === undefined) {
+              return false;
+            }
+            setAddingToDo(false);
+            return true;
           } else if (editedToDo !== undefined) {
-            updateToDo({
+            const updated = await updateToDo({
               ...editedToDo,
               title,
               description: description || null,
               due_date: dueDate,
               priority: priority || null,
-              todo_list_id: todoListId === "-1" ? null : todoListId,
+              todo_list_id: todoListId,
             });
+            if (!updated) {
+              return false;
+            }
+            setEditedToDo(undefined);
+            return true;
           }
+          return false;
         }}
         title={editedToDo?.title || ""}
         description={editedToDo?.description || ""}
         dueDate={editedToDo?.due_date || null}
         priority={editedToDo?.priority || null}
-        todoListId={editedToDo?.todo_list_id || listID || "-1"}
+        todoListId={editedToDo?.todo_list_id ?? listID ?? null}
         lists={lists || []}
       />
     </>

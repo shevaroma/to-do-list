@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/dialog";
 import List from "@/lib/list";
 
+const INBOX_LIST_VALUE = "inbox";
+
 const ToDoDialog = ({
   open,
   title,
@@ -42,14 +44,14 @@ const ToDoDialog = ({
   description?: string;
   dueDate: string | null;
   priority: number | null;
-  todoListId: string;
+  todoListId: string | null;
   onSave: (
     title: string,
     description: string | null,
     dueDate: string | null,
     priority: number | null,
-    todoListId: string,
-  ) => void;
+    todoListId: string | null,
+  ) => Promise<boolean>;
   onCancel: () => void;
   lists: List[];
 }) => {
@@ -59,30 +61,32 @@ const ToDoDialog = ({
   const [newPriority, setNewPriority] = useState(priority);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const [newListId, setNewListId] = useState(todoListId);
+  const [newListId, setNewListId] = useState(todoListId ?? INBOX_LIST_VALUE);
 
   useEffect(() => {
     setNewTitle(title);
     setNewDescription(description || "");
     setNewDueDate(dueDate);
     setNewPriority(priority);
-    setNewListId(todoListId.toString());
+    setNewListId(todoListId ?? INBOX_LIST_VALUE);
     setIsCalendarOpen(false);
     if (open && titleInputRef.current) {
       titleInputRef.current.focus();
     }
   }, [open, title, description, dueDate, priority, todoListId]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (newTitle.trim()) {
-      onSave(
+      const saved = await onSave(
         newTitle,
         newDescription || null,
         newDueDate,
         newPriority || null,
-        newListId,
+        newListId === INBOX_LIST_VALUE ? null : newListId,
       );
-      onCancel();
+      if (saved) {
+        onCancel();
+      }
     }
   };
 
@@ -165,7 +169,7 @@ const ToDoDialog = ({
                 </SelectTrigger>
                 <SelectContent>
                   <>
-                    <SelectItem value="-1" key="-1">
+                    <SelectItem value={INBOX_LIST_VALUE} key={INBOX_LIST_VALUE}>
                       Inbox
                     </SelectItem>
                     {lists.map((list) => (

@@ -51,11 +51,13 @@ const useToDos = (listID?: string) => {
       });
       if (!response.ok) {
         toast.error("Something went wrong.");
-        return;
+        return false;
       }
       await getToDos();
+      return true;
     } catch {
       toast.error("No connection.");
+      return false;
     }
   };
   const deleteToDo = async (id: number) => {
