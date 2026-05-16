@@ -1,78 +1,102 @@
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import List from "@/lib/list";
 import ToDoListError from "@/lib/to-do-list-error";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+const fetchLists = async () => {
+  let response: Response;
+
+  try {
+    response = await fetch(`/api/to-do-lists`);
+  } catch {
+    throw new Error("NoConnection");
+  }
+
+  if (!response.ok) throw new Error("Unknown");
+  return response.json() as Promise<List[]>;
+};
 
 const useLists = () => {
-  const [lists, setLists] = useState<List[]>();
-  const [listError, setListError] = useState<ToDoListError>();
-  const getLists = async () => {
-    try {
-      const response = await fetch(`/api/to-do-lists`);
-      if (!response.ok) {
-        setLists(undefined);
-        setListError(ToDoListError.Unknown);
-        return;
-      }
-      setLists(await response.json());
-      setListError(undefined);
-    } catch {
-      setLists(undefined);
-      setListError(ToDoListError.NoConnection);
-    }
-  };
-  const createList = async (name: string) => {
-    try {
+  const queryClient = useQueryClient();
+  const queryKey = ["to-do-lists"] as const;
+
+  const { data: lists, error } = useQuery({
+    queryKey,
+    queryFn: fetchLists,
+  });
+
+  const createListMutation = useMutation({
+    mutationFn: async (name: string) => {
       const response = await fetch(`/api/to-do-lists`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
-      if (!response.ok) {
-        toast.error("Something went wrong.");
-        return;
-      }
-      void getLists();
-    } catch {
-      toast.error("No connection.");
-    }
-  };
-  const renameList = async (id: string, name: string) => {
-    try {
+      if (!response.ok) throw new Error("Failed to create list.");
+      return response.json();
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (error: Error) => {
+      toast.error(
+        error.message === "NoConnection"
+          ? "No connection."
+          : "Something went wrong.",
+      );
+    },
+  });
+
+  const renameListMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
       const response = await fetch(`/api/to-do-lists`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, name }),
       });
-      if (!response.ok) {
-        toast.error("Something went wrong.");
-        return;
-      }
-      void getLists();
-    } catch {
-      toast.error("No connection.");
-    }
-  };
-  const deleteList = async (id: string) => {
-    try {
+      if (!response.ok) throw new Error("Failed to rename list.");
+      return true;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey });
+    },
+    onError: () => {
+      toast.error("Something went wrong.");
+    },
+  });
+
+  const deleteListMutation = useMutation({
+    mutationFn: async (id: string) => {
       const response = await fetch(`/api/to-do-lists`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (!response.ok) {
-        toast.error("Something went wrong.");
-        return;
-      }
-      void getLists();
-    } catch {
-      toast.error("No connection.");
-    }
+      if (!response.ok) throw new Error("Failed to delete list.");
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey });
+    },
+    onError: () => {
+      toast.error("Something went wrong.");
+    },
+  });
+
+  const listError = error
+    ? error.message === "NoConnection"
+      ? ToDoListError.NoConnection
+      : ToDoListError.Unknown
+    : undefined;
+
+  return {
+    lists,
+    listError,
+    createList: createListMutation.mutateAsync,
+    renameList: (id: string, name: string) =>
+      renameListMutation.mutateAsync({ id, name }),
+    deleteList: deleteListMutation.mutateAsync,
+    isLoading: !lists && !error,
   };
-  useEffect(() => {
-    void getLists();
-  }, []);
-  return { lists, listError, createList, renameList, deleteList };
 };
 
 export default useLists;
