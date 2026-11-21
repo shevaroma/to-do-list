@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Ellipsis, Trash2 } from "lucide-react";
 import ToDo from "@/lib/to-do";
 import { priorityColors } from "@/lib/priority";
-import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -26,8 +24,6 @@ const TodoItem = ({
   onDeleteTodo,
   onStartEdit,
 }: TodoItemProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   const getDaysLeft = (deadline: string | null) => {
     if (!deadline) return null;
 
@@ -43,17 +39,28 @@ const TodoItem = ({
 
   return (
     <div
-      className={`flex items-center px-4 rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-all ${
+      className={`group flex items-center px-4 rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-all ${
         todo.is_completed ? "opacity-60" : ""
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className="flex items-center flex-1 py-4 cursor-pointer"
+        role="button"
+        tabIndex={0}
+        aria-label={`Edit ${todo.title}`}
+        className="flex items-center flex-1 py-4 cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => onStartEdit(todo.id)}
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onStartEdit(todo.id);
+          }
+        }}
       >
         <Checkbox
+          aria-label={
+            todo.is_completed ? "Mark as not completed" : "Mark as completed"
+          }
           checked={todo.is_completed || false}
           onClick={(e) => e.stopPropagation()}
           onCheckedChange={() => onToggleComplete(todo.id)}
@@ -92,15 +99,13 @@ const TodoItem = ({
               </span>
             )
           ) : null)}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="flex items-center"
-        >
+        <div className="flex items-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-within:opacity-100 has-[[data-state=open]]:opacity-100 [@media(hover:none)]:opacity-100">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer">
+              <button
+                aria-label="To-do actions"
+                className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer"
+              >
                 <Ellipsis className="h-4 w-4 text-zinc-500" />
               </button>
             </DropdownMenuTrigger>
@@ -114,7 +119,7 @@ const TodoItem = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
