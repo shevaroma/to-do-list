@@ -20,6 +20,9 @@ def update_me(
     user: UserRead = Depends(get_current_user),
     repository: UserRepository = Depends(get_user_repository),
 ) -> UserUpdateResponse:
+    if user_update.email and user_update.email != user.email:
+        if repository.get_user_by_email(str(user_update.email)):
+            raise HTTPException(status_code=400, detail="Email already registered")
     updated_user = repository.update_user(user.id, user_update)
     if updated_user is None:
         raise HTTPException(status_code=404, detail="User not found")
