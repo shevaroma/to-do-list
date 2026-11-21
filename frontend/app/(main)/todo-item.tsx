@@ -15,9 +15,9 @@ import {
 
 type TodoItemProps = {
   todo: ToDo;
-  onToggleComplete: (id: string) => void;
-  onDeleteTodo: (id: string) => void;
-  onStartEdit: (id: string) => void;
+  onToggleComplete: (id: number) => void;
+  onDeleteTodo: (id: number) => void;
+  onStartEdit: (id: number) => void;
 };
 
 const TodoItem = ({

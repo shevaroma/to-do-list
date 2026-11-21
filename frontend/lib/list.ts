@@ -1,5 +1,5 @@
 type List = {
-  id: string;
+  id: number;
   title: string;
   owner_id: number;
 };

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useListContext } from "@/app/contexts/list-context";
 
-const ListPageContent = ({ listID }: { listID?: string }) => {
+const ListPageContent = ({ listID }: { listID?: number }) => {
   const [name, setName] = useState(listID === undefined ? "Inbox" : undefined);
   const [nameError, setNameError] = useState<ToDoListError>();
   const [editedToDo, setEditedToDo] = useState<ToDo>();

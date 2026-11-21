@@ -34,7 +34,7 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
   const { user, userError } = useUserContext();
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [renamedList, setRenamedList] = useState<List>();
-  const [deletedListID, setDeletedListID] = useState<string>();
+  const [deletedListID, setDeletedListID] = useState<number>();
   const router = useRouter();
 
   return (

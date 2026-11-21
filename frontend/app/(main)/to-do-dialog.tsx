@@ -44,13 +44,13 @@ const ToDoDialog = ({
   description?: string;
   dueDate: string | null;
   priority: number | null;
-  todoListId: string | null;
+  todoListId: number | null;
   onSave: (
     title: string,
     description: string | null,
     dueDate: string | null,
     priority: number | null,
-    todoListId: string | null,
+    todoListId: number | null,
   ) => Promise<boolean>;
   onCancel: () => void;
   lists: List[];
@@ -61,14 +61,16 @@ const ToDoDialog = ({
   const [newPriority, setNewPriority] = useState(priority);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const [newListId, setNewListId] = useState(todoListId ?? INBOX_LIST_VALUE);
+  const [newListId, setNewListId] = useState(
+    todoListId?.toString() ?? INBOX_LIST_VALUE,
+  );
 
   useEffect(() => {
     setNewTitle(title);
     setNewDescription(description || "");
     setNewDueDate(dueDate);
     setNewPriority(priority);
-    setNewListId(todoListId ?? INBOX_LIST_VALUE);
+    setNewListId(todoListId?.toString() ?? INBOX_LIST_VALUE);
     setIsCalendarOpen(false);
     if (open && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -82,7 +84,7 @@ const ToDoDialog = ({
         newDescription || null,
         newDueDate,
         newPriority || null,
-        newListId === INBOX_LIST_VALUE ? null : newListId,
+        newListId === INBOX_LIST_VALUE ? null : Number(newListId),
       );
       if (saved) {
         onCancel();

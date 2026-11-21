@@ -19,11 +19,11 @@ const TodoAddButton = ({
   deleteToDo: (id: number) => Promise<unknown>;
   deleteCompletedToDos: () => Promise<unknown>;
 }) => {
-  const handleDeleteTodo = async (id: string) => {
-    await deleteToDo(Number(id));
+  const handleDeleteTodo = async (id: number) => {
+    await deleteToDo(id);
   };
 
-  const handleToggleComplete = async (id: string) => {
+  const handleToggleComplete = async (id: number) => {
     const todo = toDos?.find((t) => t.id === id);
     if (!todo) return;
     await updateToDo({ ...todo, is_completed: !todo.is_completed });

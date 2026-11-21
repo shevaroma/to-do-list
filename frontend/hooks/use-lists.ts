@@ -24,7 +24,7 @@ const useLists = () => {
   });
 
   const renameListMutation = useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) =>
+    mutationFn: ({ id, name }: { id: number; name: string }) =>
       apiFetch<List>("/api/to-do-lists", {
         method: "PUT",
         json: { id, name },
@@ -34,7 +34,7 @@ const useLists = () => {
   });
 
   const deleteListMutation = useMutation({
-    mutationFn: (id: string) =>
+    mutationFn: (id: number) =>
       apiFetch("/api/to-do-lists", { method: "DELETE", json: { id } }),
     onSuccess,
     onError: toastError,
@@ -44,7 +44,7 @@ const useLists = () => {
     lists,
     listError: toToDoListError(error),
     createList: createListMutation.mutateAsync,
-    renameList: (id: string, name: string) =>
+    renameList: (id: number, name: string) =>
       renameListMutation.mutateAsync({ id, name }),
     deleteList: deleteListMutation.mutateAsync,
   };

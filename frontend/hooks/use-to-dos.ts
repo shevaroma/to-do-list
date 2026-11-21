@@ -4,10 +4,10 @@ import { apiFetch, toToDoListError } from "@/lib/api";
 import { toastError } from "@/lib/toast-error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const buildToDosUrl = (listID?: string) =>
+const buildToDosUrl = (listID?: number) =>
   `/api/to-dos${listID !== undefined ? `?todo_list_id=${listID}` : ""}`;
 
-const useToDos = (listID?: string) => {
+const useToDos = (listID?: number) => {
   const queryClient = useQueryClient();
   const queryKey = ["to-dos", listID] as const;
 
@@ -41,7 +41,7 @@ const useToDos = (listID?: string) => {
   });
 
   const deleteCompletedToDosMutation = useMutation({
-    mutationFn: (todoListId?: string) =>
+    mutationFn: (todoListId?: number) =>
       apiFetch("/api/to-dos", {
         method: "DELETE",
         json: { completed: true, todo_list_id: todoListId ?? null },
