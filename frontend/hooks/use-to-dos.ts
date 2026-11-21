@@ -29,8 +29,30 @@ const useToDos = (listID?: number) => {
   const updateToDoMutation = useMutation({
     mutationFn: (toDo: ToDo) =>
       apiFetch<ToDo>("/api/to-dos", { method: "PUT", json: toDo }),
-    onSuccess,
-    onError: toastError,
+    onMutate: async (toDo) => {
+      await queryClient.cancelQueries({ queryKey: ["to-dos"] });
+      const previous = queryClient.getQueriesData<ToDo[]>({
+        queryKey: ["to-dos"],
+      });
+      for (const [key, data] of previous) {
+        if (!data) continue;
+        const belongsHere = (toDo.todo_list_id ?? undefined) === key[1];
+        queryClient.setQueryData<ToDo[]>(
+          key,
+          data.flatMap((item) =>
+            item.id !== toDo.id ? [item] : belongsHere ? [toDo] : [],
+          ),
+        );
+      }
+      return { previous };
+    },
+    onError: (error, _toDo, context) => {
+      context?.previous.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      );
+      toastError(error);
+    },
+    onSettled: onSuccess,
   });
 
   const deleteToDoMutation = useMutation({
