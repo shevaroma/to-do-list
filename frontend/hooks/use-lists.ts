@@ -8,11 +8,7 @@ export const listsQueryKey = ["to-do-lists"] as const;
 const useLists = () => {
   const queryClient = useQueryClient();
 
-  const {
-    data: lists,
-    error,
-    isPending,
-  } = useQuery({
+  const { data: lists, error } = useQuery({
     queryKey: listsQueryKey,
     queryFn: () => apiFetch<List[]>("/api/to-do-lists"),
   });
@@ -51,7 +47,6 @@ const useLists = () => {
     renameList: (id: string, name: string) =>
       renameListMutation.mutateAsync({ id, name }),
     deleteList: deleteListMutation.mutateAsync,
-    isLoading: isPending,
   };
 };
 

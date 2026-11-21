@@ -17,10 +17,7 @@ type TodoItemProps = {
   todo: ToDo;
   onToggleComplete: (id: string) => void;
   onDeleteTodo: (id: string) => void;
-  isEditingInline?: boolean;
   onStartEdit: (id: string) => void;
-  onSaveEdit?: (todo: ToDo) => void;
-  onCancelEdit?: (id: string) => void;
 };
 
 const TodoItem = ({

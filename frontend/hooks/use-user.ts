@@ -18,11 +18,7 @@ const useUser = () => {
   const queryClient = useQueryClient();
   const queryKey = ["user"] as const;
 
-  const {
-    data: user,
-    error,
-    isPending,
-  } = useQuery({
+  const { data: user, error } = useQuery({
     queryKey,
     queryFn: () => apiFetch<User>("/api/users/me"),
   });
@@ -62,7 +58,6 @@ const useUser = () => {
     updateUserEmail: updateUserEmailMutation.mutateAsync,
     updateUserPassword: updateUserPasswordMutation.mutateAsync,
     deleteUser: () => deleteUserMutation.mutateAsync(),
-    isLoading: isPending,
   };
 };
 

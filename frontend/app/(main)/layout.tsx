@@ -24,19 +24,17 @@ import List from "@/lib/list";
 import DeleteListDialog from "./delete-list-dialog";
 import SidebarUserItem from "@/app/(main)/sidebar-user-item";
 import ToDoListError from "@/lib/to-do-list-error";
-import { UserProvider, useUserContextSafe } from "@/app/contexts/user-context";
+import { UserProvider, useUserContext } from "@/app/contexts/user-context";
 import { ListProvider, useListContext } from "@/app/contexts/list-context";
 
 const MainLayoutContent = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
   const { lists, listError, createList, renameList, deleteList } =
     useListContext();
-  const userContext = useUserContextSafe();
+  const { user, userError } = useUserContext();
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [renamedList, setRenamedList] = useState<List>();
   const [deletedListID, setDeletedListID] = useState<string>();
-  const user = userContext?.user;
-  const userError = userContext?.userError;
   const router = useRouter();
 
   return (

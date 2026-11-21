@@ -22,7 +22,3 @@ export const useListContext = () => {
   }
   return context;
 };
-
-export const useListContextSafe = () => {
-  return useContext(ListContext);
-};

@@ -11,12 +11,7 @@ const useToDos = (listID?: string) => {
   const queryClient = useQueryClient();
   const queryKey = ["to-dos", listID] as const;
 
-  const {
-    data: toDos,
-    error,
-    isLoading,
-    isFetching,
-  } = useQuery({
+  const { data: toDos, error } = useQuery({
     queryKey,
     queryFn: () => apiFetch<ToDo[]>(buildToDosUrl(listID)),
   });
@@ -58,16 +53,10 @@ const useToDos = (listID?: string) => {
   return {
     toDos,
     toDoError: toToDoListError(error),
-    isLoading,
-    isFetching,
     createToDo: createToDoMutation.mutateAsync,
     updateToDo: updateToDoMutation.mutateAsync,
     deleteToDo: deleteToDoMutation.mutateAsync,
     deleteCompletedToDos: deleteCompletedToDosMutation.mutateAsync,
-    isCreating: createToDoMutation.isPending,
-    isUpdating: updateToDoMutation.isPending,
-    isDeleting: deleteToDoMutation.isPending,
-    isDeletingCompleted: deleteCompletedToDosMutation.isPending,
   };
 };
 

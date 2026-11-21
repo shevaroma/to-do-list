@@ -22,7 +22,3 @@ export const useUserContext = () => {
   }
   return context;
 };
-
-export const useUserContextSafe = () => {
-  return useContext(UserContext);
-};
