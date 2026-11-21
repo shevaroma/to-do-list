@@ -1,25 +1,22 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response
 
 from common.models.user import UserRead, UserUpdate, UserUpdateResponse
 from common.utils._jwt import create_access_token
-from common.utils.auth import get_current_user
-from common.utils.dependency_injection import get_user_repository
-from db.models.user import User
-from repositories.user import UserRepository
+from common.utils.dependency_injection import CurrentUser, UserRepo
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/me", response_model=UserRead)
-def get_me(user: User = Depends(get_current_user)) -> UserRead:
+def get_me(user: CurrentUser) -> UserRead:
     return UserRead.model_validate(user)
 
 
 @router.put("/me", response_model=UserUpdateResponse)
 def update_me(
     user_update: UserUpdate,
-    user: User = Depends(get_current_user),
-    repository: UserRepository = Depends(get_user_repository),
+    user: CurrentUser,
+    repository: UserRepo,
 ) -> UserUpdateResponse:
     if user_update.email and user_update.email != user.email:
         if repository.get_user_by_email(str(user_update.email)):
@@ -44,8 +41,8 @@ def update_me(
 
 @router.delete("/me")
 def delete_me(
-    user: User = Depends(get_current_user),
-    repository: UserRepository = Depends(get_user_repository),
+    user: CurrentUser,
+    repository: UserRepo,
 ) -> Response:
     repository.delete_user(user.id)
     return Response(status_code=204)

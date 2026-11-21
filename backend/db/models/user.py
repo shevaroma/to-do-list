@@ -26,4 +26,7 @@ class User(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, email={self.email}, display_name={self.display_name})>"
+        return (
+            f"<User(id={self.id}, email={self.email}, "
+            f"display_name={self.display_name})>"
+        )

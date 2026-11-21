@@ -1,22 +1,19 @@
 import jwt
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
 
 from common.models.auth import LoginResponse, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
 from common.models.user import UserCreate, UserRead
 from common.utils._jwt import create_access_token, decode_token, password_fingerprint
 from common.utils.config import settings
-from common.utils.dependency_injection import get_user_repository
+from common.utils.dependency_injection import UserRepo
 from common.utils.email import send_email
-from repositories.user import UserRepository
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=RegisterResponse)
-def register(
-    user_in: UserCreate, repository: UserRepository = Depends(get_user_repository)
-) -> RegisterResponse:
+def register(user_in: UserCreate, repository: UserRepo) -> RegisterResponse:
     existing_user = repository.get_user_by_email(str(user_in.email))
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -28,9 +25,7 @@ def register(
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(
-    request: LoginRequest, repository: UserRepository = Depends(get_user_repository)
-) -> LoginResponse:
+def login(request: LoginRequest, repository: UserRepo) -> LoginResponse:
     user = repository.authenticate_user(str(request.email), request.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -42,7 +37,7 @@ def login(
 def reset_password(
     request: PasswordResetRequest,
     background_tasks: BackgroundTasks,
-    repository: UserRepository = Depends(get_user_repository),
+    repository: UserRepo,
 ) -> Response:
     email = str(request.email)
     token = repository.create_reset_token(email)
@@ -51,7 +46,8 @@ def reset_password(
             send_email,
             email,
             "Password Reset",
-            f"Click the link to reset your password: {settings.base_url}/reset-password?token={token}",
+            "Click the link to reset your password: "
+            f"{settings.base_url}/reset-password?token={token}",
         )
     return Response(
         content="If that email is registered, a reset link has been sent",
@@ -63,14 +59,14 @@ def reset_password(
 @router.post("/reset-confirm")
 def reset_confirm(
     request: PasswordResetConfirm,
-    repository: UserRepository = Depends(get_user_repository),
+    repository: UserRepo,
 ) -> Response:
     try:
         payload = decode_token(request.token, "reset")
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=400, detail="Token expired")
+        raise HTTPException(status_code=400, detail="Token expired") from None
     except jwt.PyJWTError:
-        raise HTTPException(status_code=400, detail="Invalid token")
+        raise HTTPException(status_code=400, detail="Invalid token") from None
 
     user = repository.get_user_by_email(payload["sub"])
     if user is None or payload.get("pwd") != password_fingerprint(

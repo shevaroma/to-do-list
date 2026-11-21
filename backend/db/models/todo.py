@@ -35,4 +35,7 @@ class Todo(Base):
     todo_list: Mapped["TodoList | None"] = relationship(back_populates="todos")
 
     def __repr__(self) -> str:
-        return f"<Todo(id={self.id}, name={self.title}, due_date={self.due_date}, priority={self.priority})>"
+        return (
+            f"<Todo(id={self.id}, name={self.title}, "
+            f"due_date={self.due_date}, priority={self.priority})>"
+        )
