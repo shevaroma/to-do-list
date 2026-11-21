@@ -1,5 +1,6 @@
 
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerificationError
 from sqlalchemy.orm import Session
 
 import common.models.user as models
@@ -7,7 +8,7 @@ from common.utils._jwt import create_reset_token
 from db.models.user import User
 from repositories.exceptions import InvalidPasswordError, NotFoundError
 
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+password_hasher = PasswordHasher()
 
 
 class UserRepository:
@@ -16,11 +17,14 @@ class UserRepository:
 
     @staticmethod
     def hash_password(password: str) -> str:
-        return pwd_context.hash(password)
+        return password_hasher.hash(password)
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+        try:
+            return password_hasher.verify(hashed_password, plain_password)
+        except (VerificationError, InvalidHashError):
+            return False
 
     def get_user_by_id(self, user_id: int) -> User | None:
         user = self._db.query(User).filter(User.id == user_id).first()
