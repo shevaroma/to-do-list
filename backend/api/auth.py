@@ -1,14 +1,11 @@
 import jwt
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
-from typing import cast
 
-from common.models.auth import LoginResponse, ChangePasswordRequest, RegisterResponse
+from common.models.auth import LoginResponse, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
 from common.models.user import UserCreate
 from common.utils._jwt import create_access_token, SECRET_KEY, ALGORITHM
-from common.utils.auth import get_current_user
 from common.utils.dependency_injection import get_user_repository
-from db.models.user import User
 from repositories.user import UserRepository
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -65,21 +62,6 @@ def reset_confirm(
 
     repository.update_password(email, None, request.new_password)
     return Response(content="Password reset successful", status_code=200)
-
-
-# change password for logged-in user
-@router.post("/change-password")
-def change_password(
-    request: ChangePasswordRequest,
-    user: User = Depends(get_current_user),
-    repository: UserRepository = Depends(get_user_repository),
-) -> Response:
-    if not repository.verify_password(
-        request.current_password, cast(str, user.hashed_password)
-    ):
-        raise HTTPException(status_code=400, detail="Current password is incorrect")
-    setattr(user, "hashed_password", repository.hash_password(request.new_password))
-    return Response(content="Password updated successfully", status_code=200)
 
 
 @router.get("/logout")
