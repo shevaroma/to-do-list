@@ -75,8 +75,10 @@ const Settings = () => {
       setCurrPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch {
-      toast.error("Wrong current password.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong.",
+      );
     }
   };
 

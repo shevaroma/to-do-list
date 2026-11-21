@@ -77,7 +77,10 @@ const useUser = () => {
       });
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        const message = data?.message ?? "Something went wrong.";
+        const message =
+          typeof data?.detail === "string"
+            ? data.detail
+            : "Something went wrong.";
         throw new Error(message);
       }
       return true;
