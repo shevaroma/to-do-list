@@ -18,7 +18,7 @@ const isTokenFresh = (token: string | undefined) => {
   }
 };
 
-export const middleware = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest) => {
   if (isTokenFresh(request.cookies.get(ACCESS_TOKEN_COOKIE)?.value)) {
     return NextResponse.next();
   }
