@@ -1,8 +1,13 @@
 import jwt
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
 
-from common.models.auth import LoginResponse, RegisterResponse
-from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
+from common.models.auth import (
+    LoginRequest,
+    LoginResponse,
+    PasswordResetConfirm,
+    PasswordResetRequest,
+    RegisterResponse,
+)
 from common.models.user import UserCreate, UserRead
 from common.utils._jwt import create_access_token, decode_token, password_fingerprint
 from common.utils.config import settings
