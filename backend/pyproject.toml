@@ -1,0 +1,6 @@
+[tool.ruff]
+src = ["."]
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
