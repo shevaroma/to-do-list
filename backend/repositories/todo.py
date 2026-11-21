@@ -8,8 +8,12 @@ class TodoRepository:
     def __init__(self, db: Session) -> None:
         self._db = db
 
-    def get_todo_by_id(self, todo_id: int) -> Todo | None:
-        return self._db.query(Todo).filter(Todo.id == todo_id).first()
+    def get_todo_for_owner(self, todo_id: int, owner_id: int) -> Todo | None:
+        return (
+            self._db.query(Todo)
+            .filter(Todo.id == todo_id, Todo.owner_id == owner_id)
+            .first()
+        )
 
     def get_todos_by_list(
         self, user_id: int, todo_list_id: int | None = None
@@ -32,10 +36,7 @@ class TodoRepository:
         self._db.refresh(todo)
         return todo
 
-    def update_todo(self, todo_id: int, todo_in: TodoUpdate) -> Todo | None:
-        todo = self.get_todo_by_id(todo_id)
-        if not todo:
-            return None
+    def update_todo(self, todo: Todo, todo_in: TodoUpdate) -> Todo:
         update_data = todo_in.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(todo, field, value)
@@ -43,11 +44,9 @@ class TodoRepository:
         self._db.refresh(todo)
         return todo
 
-    def delete_todo(self, todo_id: int) -> None:
-        todo = self.get_todo_by_id(todo_id)
-        if todo:
-            self._db.delete(todo)
-            self._db.commit()
+    def delete_todo(self, todo: Todo) -> None:
+        self._db.delete(todo)
+        self._db.commit()
 
     def delete_completed_todos(
         self, user_id: int, todo_list_id: int | None = None

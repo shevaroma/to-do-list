@@ -8,8 +8,12 @@ class TodoListRepository:
     def __init__(self, db: Session) -> None:
         self._db = db
 
-    def get_list_by_id(self, list_id: int) -> TodoList | None:
-        return self._db.query(TodoList).filter(TodoList.id == list_id).first()
+    def get_list_for_owner(self, list_id: int, owner_id: int) -> TodoList | None:
+        return (
+            self._db.query(TodoList)
+            .filter(TodoList.id == list_id, TodoList.owner_id == owner_id)
+            .first()
+        )
 
     def get_all_lists_for_user(self, user_id: int) -> list[TodoList]:
         return self._db.query(TodoList).filter(TodoList.owner_id == user_id).all()
@@ -21,10 +25,7 @@ class TodoListRepository:
         self._db.refresh(todo_list)
         return todo_list
 
-    def update_list(self, list_id: int, list_in: TodoListUpdate) -> TodoList | None:
-        todo_list = self.get_list_by_id(list_id)
-        if not todo_list:
-            return None
+    def update_list(self, todo_list: TodoList, list_in: TodoListUpdate) -> TodoList:
         update_data = list_in.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(todo_list, field, value)
@@ -32,8 +33,6 @@ class TodoListRepository:
         self._db.refresh(todo_list)
         return todo_list
 
-    def delete_list(self, list_id: int) -> None:
-        todo_list = self.get_list_by_id(list_id)
-        if todo_list:
-            self._db.delete(todo_list)
-            self._db.commit()
+    def delete_list(self, todo_list: TodoList) -> None:
+        self._db.delete(todo_list)
+        self._db.commit()
