@@ -1,10 +1,7 @@
-import { toClientResponse } from "@/lib/proxy-response";
+import { proxyToBackend } from "@/lib/backend";
 
 export const POST = async (request: Request) =>
-  toClientResponse(
-    await fetch(`${process.env.API_BASE_URL}/auth/reset-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: (await request.json()).email }),
-    }),
-  );
+  proxyToBackend("/auth/reset-password", {
+    method: "POST",
+    json: { email: (await request.json()).email },
+  });

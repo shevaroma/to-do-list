@@ -1,31 +1,16 @@
 import { cookies } from "next/headers";
-import { toClientResponse } from "@/lib/proxy-response";
 import { accessTokenCookie } from "@/lib/auth-cookie";
+import { backendFetch, proxyToBackend } from "@/lib/backend";
+import { toClientResponse } from "@/lib/proxy-response";
 
-export const GET = async () =>
-  toClientResponse(
-    await fetch(`${process.env.API_BASE_URL}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-      },
-    }),
-  );
+export const GET = async () => proxyToBackend("/users/me");
 
 export const PUT = async (request: Request) => {
   const { display_name, email, password, current_password } =
     await request.json();
-  const res = await fetch(`${process.env.API_BASE_URL}/users/me`, {
+  const res = await backendFetch("/users/me", {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-    },
-    body: JSON.stringify({
-      email,
-      display_name,
-      password,
-      current_password,
-    }),
+    json: { email, display_name, password, current_password },
   });
   if (!res.ok) return toClientResponse(res);
 
@@ -33,18 +18,8 @@ export const PUT = async (request: Request) => {
   if (data.access_token) {
     (await cookies()).set(accessTokenCookie(data.access_token));
   }
-  return new Response(JSON.stringify(data), {
-    status: res.status,
-    headers: { "Content-Type": "application/json" },
-  });
+  return Response.json(data, { status: res.status });
 };
 
 export const DELETE = async () =>
-  toClientResponse(
-    await fetch(`${process.env.API_BASE_URL}/users/me`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${(await cookies()).get("access_token")?.value}`,
-      },
-    }),
-  );
+  proxyToBackend("/users/me", { method: "DELETE" });
