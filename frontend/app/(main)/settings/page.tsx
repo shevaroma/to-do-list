@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Lock, Mail, Trash2, User } from "lucide-react";
 import { useUserContext } from "@/app/contexts/user-context";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import AccountDeleteDialog from "@/app/(main)/account-delete-dialog";
 import { useRouter } from "next/navigation";
@@ -28,20 +28,13 @@ const Settings = () => {
     deleteUser,
   } = useUserContext();
 
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
+  const [displayNameDraft, setDisplayNameDraft] = useState<string>();
+  const displayName = displayNameDraft ?? user?.display_name ?? "";
+  const email = user?.email ?? "";
   const [newEmail, setNewEmail] = useState("");
   const [currPassword, setCurrPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  useEffect(() => {
-    if (user?.display_name) setDisplayName(user.display_name);
-    if (user?.email) {
-      setEmail(user.email);
-      setNewEmail("");
-    }
-  }, [user]);
 
   const isDisplayNameUnchanged =
     displayName.trim() === "" || displayName === user?.display_name;
@@ -49,7 +42,11 @@ const Settings = () => {
 
   const handleUpdateDisplayName = async () => {
     if (isDisplayNameUnchanged) return;
-    await updateUserName({ display_name: displayName });
+    try {
+      await updateUserName({ display_name: displayName });
+    } catch {
+      return;
+    }
   };
 
   const handleUpdateEmail = async () => {
@@ -123,7 +120,7 @@ const Settings = () => {
                     value={displayName}
                     pattern="^(?!\s*$).+"
                     title="Can’t be empty."
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    onChange={(e) => setDisplayNameDraft(e.target.value)}
                   />
                 </div>
                 <Separator />
