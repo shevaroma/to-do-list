@@ -41,7 +41,10 @@ def reset_password(
     repository: UserRepository = Depends(get_user_repository),
 ) -> Response:
     repository.reset_password(str(request.email), background_tasks)
-    return Response(content="Password reset link sent", status_code=200)
+    return Response(
+        content="If that email is registered, a reset link has been sent",
+        status_code=200,
+    )
 
 
 # verify user's token and reset password

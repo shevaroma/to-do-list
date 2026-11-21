@@ -77,10 +77,13 @@ class UserRepository:
         self._db.refresh(user)
         return models.User.model_validate(user)
 
-    def reset_password(self, email: str, background_tasks: BackgroundTasks) -> str:
+    def reset_password(
+        self, email: str, background_tasks: BackgroundTasks
+    ) -> str | None:
         user = self.get_user_by_email(email)
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            # Don't reveal whether the address has an account.
+            return None
         token = create_reset_token(str(user.email), str(user.hashed_password))
         background_tasks.add_task(
             send_email,

@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
         toast.error("Something went wrong.");
         return;
       }
-      toast.success("Check your email.");
+      toast.success("If that email is registered, we sent a reset link.");
     } catch {
       toast.error("No connection.");
     }
