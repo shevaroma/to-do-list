@@ -55,7 +55,9 @@ class TodoRepository:
         self, user_id: int, todo_list_id: int | None = None
     ) -> None:
         query = self._db.query(Todo).filter(Todo.owner_id == user_id, Todo.is_completed)
-        if todo_list_id is not None:
+        if todo_list_id is None:
+            query = query.filter(Todo.todo_list_id.is_(None))
+        else:
             query = query.filter(Todo.todo_list_id == todo_list_id)
         query.delete()
         self._db.commit()
