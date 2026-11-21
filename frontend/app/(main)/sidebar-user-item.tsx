@@ -47,9 +47,7 @@ const SidebarUserItem = ({ user }: { user: User }) => {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {name}
-                </span>
+                <span className="truncate font-medium">{name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -69,9 +67,7 @@ const SidebarUserItem = ({ user }: { user: User }) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {name}
-                  </span>
+                  <span className="truncate font-medium">{name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
