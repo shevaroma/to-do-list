@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
 
 from common.models.auth import LoginResponse, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
-from common.models.user import UserCreate
+from common.models.user import UserCreate, UserRead
 from common.utils._jwt import create_access_token, decode_token, password_fingerprint
 from common.utils.config import settings
 from common.utils.dependency_injection import get_user_repository
@@ -22,7 +22,9 @@ def register(
         raise HTTPException(status_code=400, detail="Email already registered")
     user = repository.create_user(user_in)
     token = create_access_token({"sub": user.email})
-    return RegisterResponse(user=user, access_token=token, token_type="bearer")
+    return RegisterResponse(
+        user=UserRead.model_validate(user), access_token=token, token_type="bearer"
+    )
 
 
 @router.post("/login", response_model=LoginResponse)

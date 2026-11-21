@@ -1,20 +1,21 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from common.models.fields import NonEmptyStr
 
 
 class TodoListCreate(BaseModel):
-    title: str
+    title: NonEmptyStr
 
 
 class TodoListUpdate(BaseModel):
-    title: Optional[str] = None
+    title: Optional[NonEmptyStr] = None
 
 
 class TodoListRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     owner_id: int
-
-    class Config:
-        from_attributes = True

@@ -27,6 +27,7 @@ import { useTheme } from "next-themes";
 import { themes } from "@/lib/utils";
 
 const SidebarUserItem = ({ user }: { user: User }) => {
+  const name = user.display_name || user.email;
   const router = useRouter();
   const { isMobile } = useSidebar();
   const { theme, setTheme } = useTheme();
@@ -42,12 +43,12 @@ const SidebarUserItem = ({ user }: { user: User }) => {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg">
-                  {user.display_name[0].toUpperCase()}
+                  {name[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {user.display_name}
+                  {name}
                 </span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
@@ -64,12 +65,12 @@ const SidebarUserItem = ({ user }: { user: User }) => {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
-                    {user.display_name[0].toUpperCase()}
+                    {name[0].toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {user.display_name}
+                    {name}
                   </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>

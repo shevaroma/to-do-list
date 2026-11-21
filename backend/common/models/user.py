@@ -1,39 +1,28 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr
+
+from common.models.fields import NonEmptyStr, Password
 
 
-class UserBase(BaseModel):
+class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
     email: EmailStr
-
-
-class User(UserBase):
-    id: int
     display_name: Optional[str] = None
-    hashed_password: str
-
-    class Config:
-        from_attributes = True
-
-
-class UserRead(UserBase):
-    id: int
-    display_name: str
-
-    class Config:
-        from_attributes = True
 
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=8)
-    display_name: str
+    password: Password
+    display_name: NonEmptyStr
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
-    display_name: Optional[str] = None
-    password: Optional[str] = None
+    display_name: Optional[NonEmptyStr] = None
+    password: Optional[Password] = None
     current_password: Optional[str] = None
 
 
