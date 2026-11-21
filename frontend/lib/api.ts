@@ -1,7 +1,6 @@
 import ToDoListError from "@/lib/to-do-list-error";
 
 export class ApiError extends Error {
-  /** HTTP status, or `null` when the request never reached the server. */
   readonly status: number | null;
 
   constructor(status: number | null, message: string) {

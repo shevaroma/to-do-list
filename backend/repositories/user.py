@@ -82,7 +82,6 @@ class UserRepository:
     ) -> str | None:
         user = self.get_user_by_email(email)
         if not user:
-            # Don't reveal whether the address has an account.
             return None
         token = create_reset_token(str(user.email), str(user.hashed_password))
         background_tasks.add_task(

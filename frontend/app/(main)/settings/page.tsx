@@ -59,7 +59,7 @@ const Settings = () => {
       toast.success("Email changed.");
       setNewEmail("");
     } catch {
-      // Error toast is shown by the mutation.
+      return;
     }
   };
 
@@ -94,7 +94,7 @@ const Settings = () => {
       toast.success("Account deleted.");
       router.push("/sign-up");
     } catch {
-      // Error toast is shown by the mutation.
+      return;
     }
   };
 

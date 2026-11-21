@@ -7,7 +7,6 @@ export const config = {
   ],
 };
 
-// Only checks expiry; the backend verifies the signature on every request.
 const isTokenFresh = (token: string | undefined) => {
   if (!token) return false;
   try {

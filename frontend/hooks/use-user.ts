@@ -44,7 +44,6 @@ const useUser = () => {
     onError: toastError,
   });
 
-  // Errors are surfaced by the caller, which shows the backend's message.
   const updateUserPasswordMutation = useMutation({
     mutationFn: (payload: { password: string; current_password: string }) =>
       updateMe(payload),

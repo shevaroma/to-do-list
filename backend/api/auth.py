@@ -61,7 +61,6 @@ def reset_confirm(
         raise HTTPException(status_code=400, detail="Invalid token")
 
     user = repository.get_user_by_email(payload["sub"])
-    # The fingerprint changes once the password is reset, making the link single-use.
     if user is None or payload.get("pwd") != password_fingerprint(
         str(user.hashed_password)
     ):

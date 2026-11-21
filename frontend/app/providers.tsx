@@ -20,7 +20,6 @@ const queryClient = new QueryClient({
   mutationCache: new MutationCache({ onError: handleError }),
   defaultOptions: {
     queries: {
-      // Client errors (401, 404, ...) won't fix themselves on retry.
       retry: (failureCount, error) =>
         !(
           error instanceof ApiError &&

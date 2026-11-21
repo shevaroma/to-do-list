@@ -13,7 +13,6 @@ TokenType = Literal["access", "reset"]
 
 
 def password_fingerprint(hashed_password: str) -> str:
-    """Short digest of the stored hash; changes whenever the password changes."""
     return hashlib.sha256(hashed_password.encode()).hexdigest()[:16]
 
 
@@ -42,7 +41,6 @@ def create_reset_token(
 
 
 def decode_token(token: str, expected_type: TokenType) -> dict[str, Any]:
-    """Decode and validate a token; raises jwt.PyJWTError on any problem."""
     payload: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     if payload.get("type") != expected_type:
         raise jwt.InvalidTokenError("Wrong token type")

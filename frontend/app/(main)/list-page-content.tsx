@@ -104,7 +104,7 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
               return true;
             }
           } catch {
-            // Error toast is shown by the mutation; keep the dialog open.
+            return false;
           }
           return false;
         }}
