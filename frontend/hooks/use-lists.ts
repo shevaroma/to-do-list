@@ -1,101 +1,57 @@
-import { toast } from "sonner";
 import List from "@/lib/list";
-import ToDoListError from "@/lib/to-do-list-error";
+import { apiFetch, toToDoListError } from "@/lib/api";
+import { toastError } from "@/lib/toast-error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const fetchLists = async () => {
-  let response: Response;
-
-  try {
-    response = await fetch(`/api/to-do-lists`);
-  } catch {
-    throw new Error("NoConnection");
-  }
-
-  if (!response.ok) throw new Error("Unknown");
-  return response.json() as Promise<List[]>;
-};
+export const listsQueryKey = ["to-do-lists"] as const;
 
 const useLists = () => {
   const queryClient = useQueryClient();
-  const queryKey = ["to-do-lists"] as const;
 
-  const { data: lists, error } = useQuery({
-    queryKey,
-    queryFn: fetchLists,
+  const {
+    data: lists,
+    error,
+    isPending,
+  } = useQuery({
+    queryKey: listsQueryKey,
+    queryFn: () => apiFetch<List[]>("/api/to-do-lists"),
   });
 
+  const onSuccess = () =>
+    void queryClient.invalidateQueries({ queryKey: listsQueryKey });
+
   const createListMutation = useMutation({
-    mutationFn: async (name: string) => {
-      const response = await fetch(`/api/to-do-lists`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      if (!response.ok) throw new Error("Failed to create list.");
-      return response.json();
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey });
-    },
-    onError: (error: Error) => {
-      toast.error(
-        error.message === "NoConnection"
-          ? "No connection."
-          : "Something went wrong.",
-      );
-    },
+    mutationFn: (name: string) =>
+      apiFetch<List>("/api/to-do-lists", { method: "POST", json: { name } }),
+    onSuccess,
+    onError: toastError,
   });
 
   const renameListMutation = useMutation({
-    mutationFn: async ({ id, name }: { id: string; name: string }) => {
-      const response = await fetch(`/api/to-do-lists`, {
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      apiFetch<List>("/api/to-do-lists", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, name }),
-      });
-      if (!response.ok) throw new Error("Failed to rename list.");
-      return true;
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey });
-    },
-    onError: () => {
-      toast.error("Something went wrong.");
-    },
+        json: { id, name },
+      }),
+    onSuccess,
+    onError: toastError,
   });
 
   const deleteListMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/to-do-lists`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      if (!response.ok) throw new Error("Failed to delete list.");
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey });
-    },
-    onError: () => {
-      toast.error("Something went wrong.");
-    },
+    mutationFn: (id: string) =>
+      apiFetch("/api/to-do-lists", { method: "DELETE", json: { id } }),
+    onSuccess,
+    onError: toastError,
   });
-
-  const listError = error
-    ? error.message === "NoConnection"
-      ? ToDoListError.NoConnection
-      : ToDoListError.Unknown
-    : undefined;
 
   return {
     lists,
-    listError,
+    listError: toToDoListError(error),
     createList: createListMutation.mutateAsync,
     renameList: (id: string, name: string) =>
       renameListMutation.mutateAsync({ id, name }),
     deleteList: deleteListMutation.mutateAsync,
-    isLoading: !lists && !error,
+    isLoading: isPending,
   };
 };
 

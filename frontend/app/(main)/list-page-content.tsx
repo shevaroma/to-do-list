@@ -79,33 +79,32 @@ const ListPageContent = ({ listID }: { listID?: string }) => {
           setAddingToDo(false);
         }}
         onSave={async (title, description, dueDate, priority, todoListId) => {
-          if (addingToDo) {
-            const created = await createToDo({
-              title,
-              description,
-              due_date: dueDate,
-              priority,
-              todo_list_id: todoListId,
-            });
-            if (created === undefined) {
-              return false;
+          try {
+            if (addingToDo) {
+              await createToDo({
+                title,
+                description,
+                due_date: dueDate,
+                priority,
+                todo_list_id: todoListId,
+              });
+              setAddingToDo(false);
+              return true;
             }
-            setAddingToDo(false);
-            return true;
-          } else if (editedToDo !== undefined) {
-            const updated = await updateToDo({
-              ...editedToDo,
-              title,
-              description: description || null,
-              due_date: dueDate,
-              priority: priority || null,
-              todo_list_id: todoListId,
-            });
-            if (!updated) {
-              return false;
+            if (editedToDo !== undefined) {
+              await updateToDo({
+                ...editedToDo,
+                title,
+                description: description || null,
+                due_date: dueDate,
+                priority: priority || null,
+                todo_list_id: todoListId,
+              });
+              setEditedToDo(undefined);
+              return true;
             }
-            setEditedToDo(undefined);
-            return true;
+          } catch {
+            // Error toast is shown by the mutation; keep the dialog open.
           }
           return false;
         }}

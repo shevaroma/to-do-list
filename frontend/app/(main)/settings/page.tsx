@@ -54,9 +54,13 @@ const Settings = () => {
 
   const handleUpdateEmail = async () => {
     if (!newEmail.trim() || newEmail === email) return;
-    await updateUserEmail({ email: newEmail });
-    toast.success("Email changed.");
-    setEmail("");
+    try {
+      await updateUserEmail({ email: newEmail });
+      toast.success("Email changed.");
+      setNewEmail("");
+    } catch {
+      // Error toast is shown by the mutation.
+    }
   };
 
   const handleUpdatePassword = async () => {
@@ -85,12 +89,12 @@ const Settings = () => {
   const handleAccountDelete = async () => {
     if (!user?.id) return;
     try {
-      await deleteUser(String(user.id));
+      await deleteUser();
       await fetch("/api/auth/sign-out", { method: "POST" });
       toast.success("Account deleted.");
       router.push("/sign-up");
     } catch {
-      toast.error("Something went wrong.");
+      // Error toast is shown by the mutation.
     }
   };
 
