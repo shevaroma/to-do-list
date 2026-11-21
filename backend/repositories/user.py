@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import cast
 
 from fastapi import Depends, HTTPException, BackgroundTasks
@@ -6,7 +5,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 import common.models.user as models
-from common.utils._jwt import create_access_token
+from common.utils._jwt import create_reset_token
 from common.utils.config import settings
 from common.utils.email import send_email
 from db.db_session import get_db
@@ -82,9 +81,7 @@ class UserRepository:
         user = self.get_user_by_email(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        token = create_access_token(
-            {"sub": user.email}, expires_delta=timedelta(hours=1)
-        )
+        token = create_reset_token(str(user.email), str(user.hashed_password))
         background_tasks.add_task(
             send_email,
             str(user.email),

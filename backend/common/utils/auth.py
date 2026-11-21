@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from common.utils._jwt import SECRET_KEY, ALGORITHM
+from common.utils._jwt import decode_token
 from db.db_session import get_db
 from db.models.user import User
 from repositories.user import UserRepository
@@ -15,10 +15,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> User:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if not isinstance(email, str) or not email:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        email: str = decode_token(token, "access")["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.PyJWTError:

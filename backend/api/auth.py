@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response
 from common.models.auth import LoginResponse, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
 from common.models.user import UserCreate
-from common.utils._jwt import create_access_token, SECRET_KEY, ALGORITHM
+from common.utils._jwt import create_access_token, decode_token, password_fingerprint
 from common.utils.dependency_injection import get_user_repository
 from repositories.user import UserRepository
 
@@ -51,16 +51,19 @@ def reset_confirm(
     repository: UserRepository = Depends(get_user_repository),
 ) -> Response:
     try:
-        payload = jwt.decode(request.token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
-        if not email:
-            raise HTTPException(status_code=400, detail="Invalid token")
+        payload = decode_token(request.token, "reset")
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=400, detail="Token expired")
     except jwt.PyJWTError:
         raise HTTPException(status_code=400, detail="Invalid token")
 
-    repository.update_password(email, None, request.new_password)
+    user = repository.get_user_by_email(payload["sub"])
+    # The fingerprint changes once the password is reset, making the link single-use.
+    if user is None or payload.get("pwd") != password_fingerprint(
+        str(user.hashed_password)
+    ):
+        raise HTTPException(status_code=400, detail="Invalid token")
+    repository.update_password(payload["sub"], None, request.new_password)
     return Response(content="Password reset successful", status_code=200)
 
 
