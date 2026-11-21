@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import cast
 
 from common.models.todo import TodoCreate, TodoUpdate, TodoRead
 from common.models.user import UserRead
@@ -21,7 +20,7 @@ def _ensure_list_owned(
     if todo_list_id is None:
         return
     todo_list = list_repository.get_list_by_id(todo_list_id)
-    if todo_list is None or cast(int, todo_list.owner_id) != user_id:
+    if todo_list is None or todo_list.owner_id != user_id:
         raise HTTPException(status_code=404, detail="Todo list not found")
 
 
@@ -64,7 +63,7 @@ def get_todo_by_id(
     todo = repository.get_todo_by_id(todo_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if cast(int, todo.owner_id) != user.id:
+    if todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
@@ -80,7 +79,7 @@ def update_todo(
     todo = repository.get_todo_by_id(todo_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if cast(int, todo.owner_id) != user.id:
+    if todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     _ensure_list_owned(updates.todo_list_id, user.id, list_repository)
     updated_todo = repository.update_todo(todo_id, updates)
@@ -98,7 +97,7 @@ def delete_todo(
     todo = repository.get_todo_by_id(todo_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if cast(int, todo.owner_id) != user.id:
+    if todo.owner_id != user.id:
         raise HTTPException(status_code=404, detail="Todo not found")
     repository.delete_todo(todo_id)
     return

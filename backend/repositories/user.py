@@ -1,4 +1,3 @@
-from typing import cast
 
 from fastapi import Depends, HTTPException, BackgroundTasks
 from passlib.context import CryptContext
@@ -47,7 +46,7 @@ class UserRepository:
 
     def authenticate_user(self, email: str, password: str) -> User | None:
         user = self.get_user_by_email(email)
-        if user and self.verify_password(password, cast(str, user.hashed_password)):
+        if user and self.verify_password(password, user.hashed_password):
             return user
         return None
 
@@ -65,14 +64,12 @@ class UserRepository:
         if "password" in update_data:
             current_password = update_data.get("current_password")
             if not current_password or not self.verify_password(
-                current_password, cast(str, user.hashed_password)
+                current_password, user.hashed_password
             ):
                 raise HTTPException(
                     status_code=400, detail="Current password is incorrect"
                 )
-            setattr(
-                user, "hashed_password", self.hash_password(update_data["password"])
-            )
+            user.hashed_password = self.hash_password(update_data["password"])
         self._db.commit()
         self._db.refresh(user)
         return models.User.model_validate(user)
@@ -99,10 +96,10 @@ class UserRepository:
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if current_password and not self.verify_password(
-            current_password, cast(str, user.hashed_password)
+            current_password, user.hashed_password
         ):
             raise HTTPException(status_code=400, detail="Current password is incorrect")
-        setattr(user, "hashed_password", self.hash_password(new_password))
+        user.hashed_password = self.hash_password(new_password)
         self._db.commit()
         self._db.refresh(user)
         return user
