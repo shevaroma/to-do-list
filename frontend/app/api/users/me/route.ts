@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { toClientResponse } from "@/lib/proxy-response";
+import { accessTokenCookie } from "@/lib/auth-cookie";
 
 export const GET = async () =>
   toClientResponse(
@@ -30,7 +31,7 @@ export const PUT = async (request: Request) => {
 
   const data = await res.json();
   if (data.access_token) {
-    (await cookies()).set("access_token", data.access_token, { path: "/" });
+    (await cookies()).set(accessTokenCookie(data.access_token));
   }
   return new Response(JSON.stringify(data), {
     status: res.status,

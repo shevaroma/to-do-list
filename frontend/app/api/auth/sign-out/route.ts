@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
+import { expiredAccessTokenCookie } from "@/lib/auth-cookie";
 
 export const POST = async () => {
   const nextResponse = NextResponse.json({});
-  nextResponse.cookies.set({
-    name: "access_token",
-    value: "",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    expires: new Date(0),
-    path: "/",
-  });
+  nextResponse.cookies.set(expiredAccessTokenCookie());
   return nextResponse;
 };

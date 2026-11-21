@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { toClientResponse } from "@/lib/proxy-response";
+import { accessTokenCookie } from "@/lib/auth-cookie";
 
 export const POST = async (request: Request) => {
   const { displayName, email, password } = await request.json();
@@ -14,13 +15,8 @@ export const POST = async (request: Request) => {
   });
   if (!response.ok) return toClientResponse(response);
   const nextResponse = NextResponse.json({});
-  nextResponse.cookies.set({
-    name: "access_token",
-    value: (await response.json()).access_token,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 3600,
-    path: "/",
-  });
+  nextResponse.cookies.set(
+    accessTokenCookie((await response.json()).access_token),
+  );
   return nextResponse;
 };

@@ -54,10 +54,7 @@ const useUser = () => {
       if (!response.ok) throw new Error("Failed to update user email.");
       return response.json();
     },
-    onSuccess: (data: { access_token?: string }) => {
-      if (data?.access_token) {
-        document.cookie = `access_token=${data.access_token}; path=/;`;
-      }
+    onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey });
     },
     onError: () => {
