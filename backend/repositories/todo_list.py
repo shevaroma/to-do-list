@@ -1,13 +1,11 @@
-from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from common.models.todo_list import TodoListCreate, TodoListUpdate
-from db.db_session import get_db
 from db.models.todo_list import TodoList
 
 
 class TodoListRepository:
-    def __init__(self, db: Session = Depends(get_db)) -> None:
+    def __init__(self, db: Session) -> None:
         self._db = db
 
     def get_list_by_id(self, list_id: int) -> TodoList | None:

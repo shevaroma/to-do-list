@@ -5,7 +5,9 @@ from common.models.auth import LoginResponse, RegisterResponse
 from common.models.auth import PasswordResetRequest, LoginRequest, PasswordResetConfirm
 from common.models.user import UserCreate
 from common.utils._jwt import create_access_token, decode_token, password_fingerprint
+from common.utils.config import settings
 from common.utils.dependency_injection import get_user_repository
+from common.utils.email import send_email
 from repositories.user import UserRepository
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -40,7 +42,15 @@ def reset_password(
     background_tasks: BackgroundTasks,
     repository: UserRepository = Depends(get_user_repository),
 ) -> Response:
-    repository.reset_password(str(request.email), background_tasks)
+    email = str(request.email)
+    token = repository.create_reset_token(email)
+    if token is not None:
+        background_tasks.add_task(
+            send_email,
+            email,
+            "Password Reset",
+            f"Click the link to reset your password: {settings.base_url}/reset-password?token={token}",
+        )
     return Response(
         content="If that email is registered, a reset link has been sent",
         status_code=200,
@@ -65,7 +75,7 @@ def reset_confirm(
         str(user.hashed_password)
     ):
         raise HTTPException(status_code=400, detail="Invalid token")
-    repository.update_password(payload["sub"], None, request.new_password)
+    repository.update_password(payload["sub"], request.new_password)
     return Response(content="Password reset successful", status_code=200)
 
 

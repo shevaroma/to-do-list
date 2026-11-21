@@ -1,21 +1,17 @@
 
-from fastapi import Depends, HTTPException, BackgroundTasks
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 import common.models.user as models
 from common.utils._jwt import create_reset_token
-from common.utils.config import settings
-from common.utils.email import send_email
-from db.db_session import get_db
 from db.models.user import User
+from repositories.exceptions import InvalidPasswordError, NotFoundError
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
-BASE_URL = settings.base_url
 
 
 class UserRepository:
-    def __init__(self, db: Session = Depends(get_db)) -> None:
+    def __init__(self, db: Session) -> None:
         self._db = db
 
     @staticmethod
@@ -50,9 +46,7 @@ class UserRepository:
             return user
         return None
 
-    def update_user(
-        self, user_id: int, user_in: models.UserUpdate
-    ) -> models.User | None:
+    def update_user(self, user_id: int, user_in: models.UserUpdate) -> User | None:
         user = self.get_user_by_id(user_id)
         if not user:
             return None
@@ -66,39 +60,22 @@ class UserRepository:
             if not current_password or not self.verify_password(
                 current_password, user.hashed_password
             ):
-                raise HTTPException(
-                    status_code=400, detail="Current password is incorrect"
-                )
+                raise InvalidPasswordError()
             user.hashed_password = self.hash_password(update_data["password"])
         self._db.commit()
         self._db.refresh(user)
-        return models.User.model_validate(user)
+        return user
 
-    def reset_password(
-        self, email: str, background_tasks: BackgroundTasks
-    ) -> str | None:
+    def create_reset_token(self, email: str) -> str | None:
         user = self.get_user_by_email(email)
         if not user:
             return None
-        token = create_reset_token(str(user.email), str(user.hashed_password))
-        background_tasks.add_task(
-            send_email,
-            str(user.email),
-            "Password Reset",
-            f"Click the link to reset your password: {BASE_URL}/reset-password?token={token}",
-        )
-        return token
+        return create_reset_token(user.email, user.hashed_password)
 
-    def update_password(
-        self, email: str, current_password: str | None, new_password: str
-    ) -> User:
+    def update_password(self, email: str, new_password: str) -> User:
         user = self.get_user_by_email(email)
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        if current_password and not self.verify_password(
-            current_password, user.hashed_password
-        ):
-            raise HTTPException(status_code=400, detail="Current password is incorrect")
+            raise NotFoundError("User not found")
         user.hashed_password = self.hash_password(new_password)
         self._db.commit()
         self._db.refresh(user)

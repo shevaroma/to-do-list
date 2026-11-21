@@ -1,13 +1,11 @@
-from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from common.models.todo import TodoCreate, TodoUpdate
-from db.db_session import get_db
 from db.models.todo import Todo
 
 
 class TodoRepository:
-    def __init__(self, db: Session = Depends(get_db)) -> None:
+    def __init__(self, db: Session) -> None:
         self._db = db
 
     def get_todo_by_id(self, todo_id: int) -> Todo | None:
