@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "@/app/(main)/header";
 import useToDos from "@/hooks/use-to-dos";
+import useList from "@/hooks/use-list";
 import ToDoListError from "@/lib/to-do-list-error";
 import TodoButton from "@/app/(main)/todo-add-button";
 import ToDoDialog from "@/app/(main)/to-do-dialog";
@@ -12,8 +13,6 @@ import { Plus } from "lucide-react";
 import { useListContext } from "@/app/contexts/list-context";
 
 const ListPageContent = ({ listID }: { listID?: number }) => {
-  const [name, setName] = useState(listID === undefined ? "Inbox" : undefined);
-  const [nameError, setNameError] = useState<ToDoListError>();
   const [editedToDo, setEditedToDo] = useState<ToDo>();
   const [addingToDo, setAddingToDo] = useState(false);
   const {
@@ -26,23 +25,8 @@ const ListPageContent = ({ listID }: { listID?: number }) => {
   } = useToDos(listID);
   const { lists } = useListContext();
 
-  useEffect(() => {
-    if (listID === undefined) return;
-    (async () => {
-      try {
-        const response = await fetch(`/api/to-do-lists/${listID}`);
-        if (!response.ok) {
-          setName(undefined);
-          setNameError(ToDoListError.Unknown);
-          return;
-        }
-        setName((await response.json()).title);
-      } catch {
-        setName(undefined);
-        setNameError(ToDoListError.NoConnection);
-      }
-    })();
-  }, [listID]);
+  const { list, listError: nameError } = useList(listID);
+  const name = listID === undefined ? "Inbox" : list?.title;
   return (
     <>
       <div className="w-full flex flex-col">

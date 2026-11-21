@@ -36,7 +36,10 @@ const useLists = () => {
   const deleteListMutation = useMutation({
     mutationFn: (id: number) =>
       apiFetch("/api/to-do-lists", { method: "DELETE", json: { id } }),
-    onSuccess,
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: [...listsQueryKey, id] });
+      onSuccess();
+    },
     onError: toastError,
   });
 
