@@ -80,9 +80,3 @@ def reset_confirm(
         raise HTTPException(status_code=400, detail="Invalid token")
     repository.update_password(payload["sub"], request.new_password)
     return Response(content="Password reset successful", status_code=200)
-
-
-@router.get("/logout")
-def logout() -> Response:
-    # client-side logout in frontend
-    return Response(content="Logout successful", status_code=200)
