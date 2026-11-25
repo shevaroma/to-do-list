@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from api import api_router
 from db import init_db
-from repositories.exceptions import InvalidPasswordError, NotFoundError
+from repositories.exceptions import InvalidPasswordError
 
 
 @asynccontextmanager
@@ -29,11 +29,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(api_router)
-
-
-@app.exception_handler(NotFoundError)
-def handle_not_found(_request: Request, exc: NotFoundError) -> JSONResponse:
-    return JSONResponse(status_code=404, content={"detail": str(exc) or "Not found"})
 
 
 @app.exception_handler(InvalidPasswordError)

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import common.models.user as models
 from common.utils._jwt import create_reset_token
 from db.models.user import User
-from repositories.exceptions import InvalidPasswordError, NotFoundError
+from repositories.exceptions import InvalidPasswordError
 
 password_hasher = PasswordHasher()
 
@@ -75,10 +75,7 @@ class UserRepository:
             return None
         return create_reset_token(user.email, user.hashed_password)
 
-    def update_password(self, email: str, new_password: str) -> User:
-        user = self.get_user_by_email(email)
-        if not user:
-            raise NotFoundError("User not found")
+    def update_password(self, user: User, new_password: str) -> User:
         user.hashed_password = self.hash_password(new_password)
         self._db.commit()
         self._db.refresh(user)

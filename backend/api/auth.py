@@ -78,5 +78,5 @@ def reset_confirm(
         str(user.hashed_password)
     ):
         raise HTTPException(status_code=400, detail="Invalid token")
-    repository.update_password(payload["sub"], request.new_password)
+    repository.update_password(user, request.new_password)
     return Response(content="Password reset successful", status_code=200)
