@@ -129,10 +129,12 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
           setDeletedListID(undefined);
         }}
         onDelete={async () => {
-          if (deletedListID !== undefined) {
+          if (deletedListID === undefined) return;
+          try {
             await deleteList(deletedListID);
-            setDeletedListID(undefined);
             router.push("/");
+          } catch {
+            return;
           }
         }}
       />
