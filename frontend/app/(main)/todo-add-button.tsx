@@ -87,26 +87,28 @@ const TodoAddButton = ({
         </>
       )}
       <ul>
-        {toDos
-          .filter((toDo) => toDo.is_completed)
-          .map((todo) => (
-            <motion.li
-              key={todo.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <TodoItem
-                todo={todo}
-                onToggleComplete={handleToggleComplete}
-                onDeleteTodo={handleDeleteTodo}
-                onStartEdit={() => {
-                  onClick(todo);
-                }}
-              />
-            </motion.li>
-          ))}
+        <AnimatePresence>
+          {toDos
+            .filter((toDo) => toDo.is_completed)
+            .map((todo) => (
+              <motion.li
+                key={todo.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <TodoItem
+                  todo={todo}
+                  onToggleComplete={handleToggleComplete}
+                  onDeleteTodo={handleDeleteTodo}
+                  onStartEdit={() => {
+                    onClick(todo);
+                  }}
+                />
+              </motion.li>
+            ))}
+        </AnimatePresence>
       </ul>
     </div>
   );
