@@ -166,7 +166,7 @@ const ToDoForm = ({
           size="sm"
           onClick={handleSave}
           className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 disabled:cursor-not-allowed disabled:text-gray-400"
-          disabled={!newTitle.trim() || newTitle.length === 0}
+          disabled={!newTitle.trim()}
         >
           <Check className="h-4 w-4" />
         </Button>
