@@ -58,7 +58,7 @@ const ToDoForm = ({
   const [newTitle, setNewTitle] = useState(title);
   const [newDescription, setNewDescription] = useState(description || "");
   const [newDueDate, setNewDueDate] = useState(dueDate);
-  const [newPriority, setNewPriority] = useState(priority);
+  const [newPriority, setNewPriority] = useState(priority ?? 3);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [newListId, setNewListId] = useState(
     todoListId?.toString() ?? INBOX_LIST_VALUE,
@@ -70,7 +70,7 @@ const ToDoForm = ({
         newTitle,
         newDescription || null,
         newDueDate,
-        newPriority || null,
+        newPriority,
         newListId === INBOX_LIST_VALUE ? null : Number(newListId),
       );
       if (saved) {
@@ -125,10 +125,8 @@ const ToDoForm = ({
             </PopoverContent>
           </Popover>
           <Select
-            value={newPriority?.toString() || "0"}
-            onValueChange={(value) =>
-              setNewPriority(value === "0" ? null : Number.parseInt(value))
-            }
+            value={newPriority.toString()}
+            onValueChange={(value) => setNewPriority(Number.parseInt(value))}
           >
             <SelectTrigger
               className={`h-8 px-2 ${getPriorityColor(newPriority)}`}
