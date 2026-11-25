@@ -111,28 +111,33 @@ const Settings = () => {
                   Enter your full name or a display name you&#39;d like to use.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    id="display-name"
-                    className="w-1/2"
-                    placeholder="Enter your display name"
-                    value={displayName}
-                    pattern="^(?!\s*$).+"
-                    title="Can’t be empty."
-                    onChange={(e) => setDisplayNameDraft(e.target.value)}
-                  />
-                </div>
-                <Separator />
-                <div className="flex justify-between items-center pt-4">
-                  <CardDescription>This can’t be empty.</CardDescription>
-                  <Button
-                    disabled={isDisplayNameUnchanged}
-                    onClick={handleUpdateDisplayName}
-                  >
-                    Update name
-                  </Button>
-                </div>
+              <CardContent>
+                <form
+                  className="space-y-4"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    await handleUpdateDisplayName();
+                  }}
+                >
+                  <div className="space-y-2">
+                    <Input
+                      id="display-name"
+                      className="w-1/2"
+                      placeholder="Enter your display name"
+                      value={displayName}
+                      pattern="^(?!\s*$).+"
+                      title="Can’t be empty."
+                      onChange={(e) => setDisplayNameDraft(e.target.value)}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between items-center pt-4">
+                    <CardDescription>This can’t be empty.</CardDescription>
+                    <Button disabled={isDisplayNameUnchanged} type="submit">
+                      Update name
+                    </Button>
+                  </div>
+                </form>
               </CardContent>
             </Card>
             <Card>
