@@ -38,11 +38,6 @@ def delete_completed_todos(
     repository.delete_completed_todos(user.id, todo_list_id)
 
 
-@router.get("/{todo_id}", response_model=TodoRead)
-def get_todo_by_id(todo: OwnedTodo) -> Todo:
-    return todo
-
-
 @router.put("/{todo_id}", response_model=TodoRead)
 def update_todo(
     updates: TodoUpdate,
