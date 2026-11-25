@@ -93,8 +93,10 @@ const MainLayoutContent = ({ children }: { children: ReactNode }) => {
           </>
         ) : (
           <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">
-            {listError === ToDoListError.NoConnection &&
-            userError === ToDoListError.NoConnection
+            {[listError, userError].every(
+              (error) =>
+                error === undefined || error === ToDoListError.NoConnection,
+            )
               ? "No connection."
               : "Something went wrong."}
           </div>

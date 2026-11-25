@@ -49,8 +49,10 @@ const ListPageContent = ({ listID }: { listID?: number }) => {
         />
         {nameError === undefined && toDoError === undefined ? null : (
           <div className="text-muted-foreground text-center p-4 text-sm grow flex items-center justify-center">
-            {nameError === ToDoListError.NoConnection &&
-            toDoError === ToDoListError.NoConnection
+            {[nameError, toDoError].every(
+              (error) =>
+                error === undefined || error === ToDoListError.NoConnection,
+            )
               ? "No connection."
               : "Something went wrong."}
           </div>
