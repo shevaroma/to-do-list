@@ -71,7 +71,7 @@ const TodoItem = ({
           <div className="flex items-center gap-2">
             {todo.priority && (
               <div
-                className={`w-2 h-2 rounded-full ${priorityColors[todo.priority ?? 0]}`}
+                className={`w-2 h-2 rounded-full ${priorityColors[todo.priority]}`}
               />
             )}
             <h3
